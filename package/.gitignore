@@ -1,0 +1,17 @@
+node_modules
+
+src
+.vscode
+.cache
+/build
+.env
+.dev.vars
+
+.wrangler
+
+package-lock.json
+bun.lockb
+.idea
+
+**/.DS_Store
+preline-main

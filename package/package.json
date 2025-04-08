@@ -1,0 +1,119 @@
+{
+	"name": "flying-worker",
+	"version": "0.0.102",
+	"license": "MIT",
+	"description": "A application development framework for Cloudflare Worker",
+	"author": "Al Emran <emrancu1@gmail.com> (https://x.com/ALEMRANCU)",
+	"keywords": [
+		"worker",
+		"typescript",
+		"cloudflare worker",
+		"Hono",
+		"Remix"
+	],
+	"homepage": "https://github.com/emrancu/flying-worker#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/emrancu/flying-worker.git"
+	},
+	"bugs": {
+		"url": "https://github.com/emrancu/flying-worker/issues"
+	},
+	"type": "module",
+	"exports": {
+		"./auth": {
+			"types": "./dist/auth/index.d.ts",
+			"import": "./dist/auth/index.js"
+		},
+		"./cookie": {
+			"types": "./dist/cookie/index.d.ts",
+			"import": "./dist/cookie/index.js",
+			"require": "./dist/cookie/index.cjs"
+		},
+		"./core": {
+			"types": "./dist/core/index.d.ts",
+			"import": "./dist/core/index.js"
+		},
+		"./database": {
+			"types": "./dist/database/index.d.ts",
+			"import": "./dist/database/index.js"
+		},
+		"./event": {
+			"types": "./dist/event/index.d.ts",
+			"import": "./dist/event/index.js"
+		},
+		"./kv": {
+			"types": "./dist/kv/index.d.ts",
+			"import": "./dist/kv/index.js"
+		},
+		"./middlewares": {
+			"types": "./dist/middlewares/index.d.ts",
+			"import": "./dist/middlewares/index.js"
+		},
+		"./queue": {
+			"types": "./dist/queue/index.d.ts",
+			"import": "./dist/queue/index.js"
+		},
+		"./route": {
+			"types": "./dist/route/index.d.ts",
+			"import": "./dist/route/index.js"
+		},
+		"./session": {
+			"types": "./dist/session/index.d.ts",
+			"import": "./dist/session/index.js"
+		},
+		"./supports": {
+			"types": "./dist/supports/index.d.ts",
+			"import": "./dist/supports/index.js"
+		},
+		"./types": {
+			"types": "./dist/type-declaration/index.d.ts",
+			"import": "./dist/type-declaration/index.js"
+		},
+		"./zod-schema": {
+			"types": "./dist/zod-schema/index.d.ts",
+			"import": "./dist/zod-schema/index.js"
+		}
+	},
+	"sideEffects": false,
+	"files": [
+		"dist",
+		"package.json"
+	],
+	"scripts": {
+		"dev": "remix vite:build && cp -r public/* build/client/",
+		"builds": "remix vite:build && cp -r public/* build/client/",
+		"serve": "wrangler dev && cp -r public/* build/client/",
+		"deploy": "remix vite:build && cp -r public/* build/client/ && wrangler deploy",
+		"build": "tsup src/**/*.ts --format esm --dts"
+	},
+	"dependencies": {
+		"@react-router/cloudflare": "^7.2.0",
+		"@react-router/remix-routes-option-adapter": "^7.2.0",
+		"bcryptjs": "^3.0.2",
+		"drizzle-orm": "^0.40.1",
+		"hono": "^4.7.2",
+		"isbot": "^5.1.17",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"react-router": "^7.2.0",
+		"remix-hono": "^0.0.18",
+		"zod": "^3.24.2"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20250224.0",
+		"@react-router/dev": "^7.4.1",
+		"@tailwindcss/vite": "^4.0.0",
+		"@types/node": "^20",
+		"@types/react": "^19.0.1",
+		"@types/react-dom": "^19.0.1",
+		"chokidar-cli": "^3.0.0",
+		"react-router-devtools": "^1.1.0",
+		"tailwindcss": "^4.0.0",
+		"tsx": "^4.19.3",
+		"typescript": "^5.7.2",
+		"vite": "^6.2.4",
+		"vite-tsconfig-paths": "^5.1.4",
+		"wrangler": "^3.109.2"
+	}
+}

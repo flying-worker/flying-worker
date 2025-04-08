@@ -1,0 +1,18 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"name": "Remix Hono",
+	"includeVersion": true,
+	"entryPoints": [
+		"./src/core/Application.ts",
+		"./src/core/abstraction/BaseMiddleware.ts",
+		"./src/request/index.ts",
+		"./src/route/RemixRoute.ts",
+		"./src/route/Route.ts"
+	],
+	"out": "pages",
+	"json": "pages/index.json",
+	"cleanOutputDir": true,
+	"projectDocuments": ["./docs/*.md"],
+	"plugin": ["typedoc-plugin-mdn-links"],
+	"categorizeByGroup": false
+}
