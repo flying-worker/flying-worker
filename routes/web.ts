@@ -13,7 +13,7 @@ import { Context } from "hono";
 import { UserController } from "../controllers/UserController";
 import Auth from "../src/auth/Auth";
 import { App } from "../src/core";
-import {ReactRoute, Route} from "../src/route";
+import { Route } from "../src/route";
 import { Session } from "../src/session";
 
 App.hono.post("test-001", async (context: Context) => {
@@ -36,15 +36,3 @@ Route.get("/web", async (context: Context) => {
 Route.get("/test", [UserController, "testWeb"]);
 
 Route.get("/test/user", [UserController, "user"]);
-
-ReactRoute("/", "./resources/react/pages/Index.tsx");
-ReactRoute("/login", "./resources/react/pages/Login.tsx");
-
-ReactRoute(
-	"/product",
-	async () => {
-		ReactRoute("/", "./resources/react/pages/KV.tsx");
-	},
-	["test"],
-);
-

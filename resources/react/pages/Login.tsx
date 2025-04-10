@@ -1,6 +1,6 @@
 import type {MetaFunction } from "react-router";
 import LoginPage from '../themes/default/pages/auth/Login';
-import GuestLayout from '@remix/layouts/GuestLayout';
+import GuestLayout from '@react/layouts/GuestLayout';
 
 export const meta: MetaFunction = () => {
   return [{ title: "Remix and Hono on Vite on Cloudflare pages" }];

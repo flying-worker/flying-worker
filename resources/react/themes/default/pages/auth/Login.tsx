@@ -1,12 +1,12 @@
-import type {MetaFunction } from "@remix-run/cloudflare";
+import type { MetaFunction } from "react-router";
 import React, { useState} from 'react'
 
 
-import Checkbox from '@remix/themes/default/components/Checkbox';
-import InputError from '@remix/themes/default/components/InputError';
-import InputLabel from '@remix/themes/default/components/InputLabel';
-import PrimaryButton from '@remix/themes/default/components/PrimaryButton';
-import TextInput from '@remix/themes/default/components/TextInput';
+import Checkbox from '@react/themes/default/components/Checkbox';
+import InputError from '@react/themes/default/components/InputError';
+import InputLabel from '@react/themes/default/components/InputLabel';
+import PrimaryButton from '@react/themes/default/components/PrimaryButton';
+import TextInput from '@react/themes/default/components/TextInput';
 
 import { FormEventHandler } from 'react';
 
