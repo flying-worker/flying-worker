@@ -1,15 +1,15 @@
 {
 	"name": "flying-worker",
-	"version": "1.0.0",
+	"version": "0.1.0",
 	"license": "MIT",
 	"description": "A application development framework for Cloudflare Worker",
 	"author": "Al Emran <emrancu1@gmail.com> (https://x.com/ALEMRANCU)",
 	"keywords": [
 		"worker",
 		"typescript",
-		"cloudflare worker",
+		"cloudflare-worker",
 		"Hono",
-		"Remix"
+		"React Router 7"
 	],
 	"homepage": "https://github.com/emrancu/flying-worker#readme",
 	"repository": {
