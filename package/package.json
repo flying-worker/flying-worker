@@ -1,6 +1,6 @@
 {
 	"name": "flying-worker",
-	"version": "0.0.102",
+	"version": "1.0.0",
 	"license": "MIT",
 	"description": "A application development framework for Cloudflare Worker",
 	"author": "Al Emran <emrancu1@gmail.com> (https://x.com/ALEMRANCU)",
@@ -81,28 +81,24 @@
 		"package.json"
 	],
 	"scripts": {
-		"dev": "remix vite:build && cp -r public/* build/client/",
-		"builds": "remix vite:build && cp -r public/* build/client/",
-		"serve": "wrangler dev && cp -r public/* build/client/",
-		"deploy": "remix vite:build && cp -r public/* build/client/ && wrangler deploy",
 		"build": "tsup src/**/*.ts --format esm --dts"
 	},
 	"dependencies": {
-		"@react-router/cloudflare": "^7.2.0",
-		"@react-router/remix-routes-option-adapter": "^7.2.0",
+		"@react-router/cloudflare": "^7.5.0",
+		"@react-router/remix-routes-option-adapter": "^7.5.0",
 		"bcryptjs": "^3.0.2",
 		"drizzle-orm": "^0.40.1",
 		"hono": "^4.7.2",
 		"isbot": "^5.1.17",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
-		"react-router": "^7.2.0",
+		"react-router": "^7.5.0",
 		"remix-hono": "^0.0.18",
 		"zod": "^3.24.2"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250224.0",
-		"@react-router/dev": "^7.4.1",
+		"@react-router/dev": "^7.5.0",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/node": "^20",
 		"@types/react": "^19.0.1",

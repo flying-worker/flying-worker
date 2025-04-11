@@ -60,10 +60,9 @@
 	},
 	"scripts": {
 		"test": "vitest",
-		"remix-watch": "chokidar 'resources/**/*' -c 'react-router build'",
-		"remix-dev": "react-router dev && cp -r public/* build/client/",
-		"remix-build": "react-router build && cp -r public/* build/client/",
-		"serve": "wrangler dev && cp -r public/* build/client/",
+		"react-watch": "chokidar 'resources/**/*' -c 'react-router build'",
+		"react-build": "react-router build && cp -r public/* build/client/",
+		"dev": "wrangler dev && cp -r public/* build/client/",
 		"publish": "react-router build && cp -r public/* build/client/ && wrangler deploy",
 		"quality": "biome check .",
 		"quality:fix": "biome check . --write --unsafe",
@@ -71,7 +70,13 @@
 		"generate-types": "wrangler types",
 		"type-check": "generate-types && tsc"
 	},
-	"keywords": ["worker", "typescript", "cloudflare worker", "Hono", "Remix"],
+	"keywords": [
+		"worker",
+		"typescript",
+		"cloudflare worker",
+		"Hono",
+		"Remix"
+	],
 	"author": "",
 	"license": "MIT",
 	"resolutions": {
@@ -79,12 +84,13 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"@react-router/dev": "^7.4.1",
+		"@react-router/dev": "^7.5.0",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/node": "^20.17.24",
 		"@types/react": "^19.0.1",
 		"@types/react-dom": "^19.0.1",
 		"chokidar-cli": "^3.0.0",
+		"drizzle-kit": "^0.30.6",
 		"miniflare": "^4.20250310.0",
 		"react-router-devtools": "^1.1.0",
 		"tailwindcss": "^4.0.0",
@@ -96,11 +102,11 @@
 		"vite": "^6.2.4",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.1.1",
-		"wrangler": "^3.109.2"
+		"wrangler": "^4.2.0"
 	},
 	"dependencies": {
-		"@react-router/cloudflare": "^7.4.1",
-		"@react-router/remix-routes-option-adapter": "^7.4.1",
+		"@react-router/cloudflare": "^7.5.0",
+		"@react-router/remix-routes-option-adapter": "^7.5.0",
 		"@rollup/plugin-inject": "^5.0.5",
 		"bcryptjs": "^3.0.2",
 		"dotenv": "^16.4.7",
@@ -109,7 +115,7 @@
 		"isbot": "^5.1.17",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
-		"react-router": "^7.4.1",
+		"react-router": "^7.5.0",
 		"remix-hono": "^0.0.18",
 		"rimraf": "^5.0.10"
 	}
