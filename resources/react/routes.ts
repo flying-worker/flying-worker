@@ -9,7 +9,6 @@ import { type DefineRouteFunction } from "../../src/type-declaration";
 
 export default remixRoutesOptionAdapter(
 	async (defineRoutes: DefineRoutesFunction) => {
-
 		await import("../../routes/react");
 
 		return defineRoutes(async (route: DefineRouteFunction) => {

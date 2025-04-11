@@ -4,7 +4,6 @@ import Application from "./bootstrap/App";
 import { Env } from "./types/declarations";
 
 export default {
-
 	fetch: async (request: Request, env: Env, ctx: ExecutionContext) => {
 		return await Application.boot(request, env, ctx);
 	},

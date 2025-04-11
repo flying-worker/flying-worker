@@ -70,13 +70,7 @@
 		"generate-types": "wrangler types",
 		"type-check": "generate-types && tsc"
 	},
-	"keywords": [
-		"worker",
-		"typescript",
-		"cloudflare worker",
-		"Hono",
-		"Remix"
-	],
+	"keywords": ["worker", "typescript", "cloudflare worker", "Hono", "Remix"],
 	"author": "",
 	"license": "MIT",
 	"resolutions": {
