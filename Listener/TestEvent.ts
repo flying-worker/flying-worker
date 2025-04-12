@@ -1,1 +1,3 @@
-export default function (name: string) {}
+export default function (name: string) {
+    console.log(name)
+}
