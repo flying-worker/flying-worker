@@ -1,5 +1,1 @@
-
-export default function (name: string) {
-
-	console.log("success...ss", name)
-}
+export default function (name: string) {}

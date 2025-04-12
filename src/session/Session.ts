@@ -1,15 +1,13 @@
-
 import { getSession, getSessionStorage } from "remix-hono/session";
 import { Request as CustomRequest } from "../core";
 
 class SessionManager {
-
 	public getSession() {
-		return  getSession(CustomRequest.getContext());
+		return getSession(CustomRequest.getContext());
 	}
 
 	public getStorage() {
-		return  getSessionStorage(CustomRequest.getContext());
+		return getSessionStorage(CustomRequest.getContext());
 	}
 
 	public get(key: string, defaultValue: any = ""): any {

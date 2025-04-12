@@ -1,5 +1,4 @@
 import RemixMiddleware from "../middlewares/RemixMiddleware";
-import RemixRegister from "../src/middlewares/ReactRouter";
 import TestMiddleware from "../middlewares/TestMiddleware";
 import {
 	Cors,
@@ -9,6 +8,7 @@ import {
 	Session,
 	SessionAuth,
 } from "../src/middlewares";
+import RemixRegister from "../src/middlewares/ReactRouter";
 import { MiddlewaresConfig } from "../src/type-declaration";
 
 /**

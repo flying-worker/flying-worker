@@ -5,7 +5,7 @@ import { Env } from "../types/declarations";
 
 let honoApp: Hono;
 
-const initApp = async (queue: boolean = false) => {
+const initApp = async (queue = false) => {
 	const config = await import("../config");
 
 	await App.boot(config.default, queue);
@@ -26,12 +26,10 @@ export default {
 		return honoApp.fetch(request, env, ctx);
 	},
 	bootQueue: async (env: Env, ctx: ExecutionContext) => {
-
 		if (!honoApp) {
 			App.setEnv(env);
 
 			await initApp(true);
 		}
-
 	},
 };

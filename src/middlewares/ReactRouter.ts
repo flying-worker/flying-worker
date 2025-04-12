@@ -1,15 +1,13 @@
 import type { Context, Next } from "hono";
-import { type ServerBuild, createRequestHandler } from "react-router";
+import { createRequestHandler } from "react-router";
 import BaseMiddleware from "../core/abstraction/BaseMiddleware";
 
- class ReactRouter extends BaseMiddleware {
-
+class ReactRouter extends BaseMiddleware {
 	public async boot(context: Context, next: Next) {
-
 		const requestHandler = createRequestHandler(
 			// @ts-ignore
 			() => import("virtual:react-router/server-build"),
-			import.meta.env.MODE
+			import.meta.env.MODE,
 		);
 
 		return requestHandler(context.req.raw, {

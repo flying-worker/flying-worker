@@ -16,7 +16,6 @@ export default class Session extends BaseMiddleware {
 	};
 
 	public async boot(context: Context, next: Next) {
-
 		if (!this.isAvoidPath(context.req.path)) {
 			const secret = App.config.app.secret;
 

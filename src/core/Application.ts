@@ -29,7 +29,7 @@ class Application {
 		this.hono = new Hono();
 	}
 
-	public async boot(config: Config, queue: boolean = false) {
+	public async boot(config: Config, queue = false) {
 		this.config = config;
 
 		if (Object.keys(this.config.app).length === 0) {
@@ -40,13 +40,11 @@ class Application {
 			throw new Error("Session Configuration not set");
 		}
 
-		if(queue){
-
+		if (queue) {
 			return;
 		}
 
 		this.basicInit();
-
 
 		this.activeGlobalMiddleware();
 

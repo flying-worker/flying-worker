@@ -21,7 +21,6 @@ function isClassListener(listener: Listener): listener is ClassListener {
 function isCallbackFuncListener(
 	listener: Listener,
 ): listener is CallbackListener {
-
 	return (
 		typeof listener === "function" &&
 		!(

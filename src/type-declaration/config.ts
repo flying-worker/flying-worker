@@ -145,7 +145,7 @@ type SessionConfig = {
 	domain?: string; // Optional because it might be undefined
 	secure: boolean | undefined;
 	httpOnly: boolean;
-	sameSite: boolean | "lax" | "strict" | "none"
+	sameSite: boolean | "lax" | "strict" | "none";
 };
 
 type Config = {
