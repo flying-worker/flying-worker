@@ -12,9 +12,8 @@
 import { Context } from "hono";
 import { UserController } from "../controllers/UserController";
 import Auth from "../src/auth/Auth";
-import { App } from "../src/core";
-import { Route } from "../src/route";
-import { Session } from "../src/session";
+import {App} from "../src/core";
+import {ReactRoute, Route} from "../src/route";
 
 App.hono.post("test-001", async (context: Context) => {
 	return context.json({
@@ -23,10 +22,6 @@ App.hono.post("test-001", async (context: Context) => {
 });
 
 Route.get("/web", async (context: Context) => {
-	Session.set("name", "Emran");
-
-	// const statement = sql.raw(`select * from 'users' where id = 2`);
-	// const res: unknown[] = await drizzle(getEnv("DB")).get(statement)
 
 	return context.json({
 		dd: await Auth.attempt({ email: "admin@admin.com" }),

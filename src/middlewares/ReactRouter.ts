@@ -2,16 +2,19 @@ import type { Context, Next } from "hono";
 import { type ServerBuild, createRequestHandler } from "react-router";
 import BaseMiddleware from "../core/abstraction/BaseMiddleware";
 
-abstract class ReactRouter extends BaseMiddleware {
-	protected abstract getServerBuild(): Promise<unknown>;
+ class ReactRouter extends BaseMiddleware {
 
 	public async boot(context: Context, next: Next) {
-		const build = await this.getServerBuild();
+
 		const requestHandler = createRequestHandler(
-			build as unknown as ServerBuild,
+			// @ts-ignore
+			() => import("virtual:react-router/server-build"),
+			import.meta.env.MODE
 		);
 
-		return await requestHandler(context.req.raw);
+		return requestHandler(context.req.raw, {
+			cloudflare: { ctx: context },
+		});
 	}
 }
 

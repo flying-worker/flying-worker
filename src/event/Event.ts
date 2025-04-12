@@ -21,7 +21,14 @@ function isClassListener(listener: Listener): listener is ClassListener {
 function isCallbackFuncListener(
 	listener: Listener,
 ): listener is CallbackListener {
-	return typeof listener === "function" && !("prototype" in listener);
+
+	return (
+		typeof listener === "function" &&
+		!(
+			"prototype" in listener &&
+			Object.getOwnPropertyNames(listener.prototype).length > 1
+		)
+	);
 }
 
 // Function to parse delay duration

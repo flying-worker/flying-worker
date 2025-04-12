@@ -2,7 +2,7 @@ import type { Context, Next } from "hono";
 import { Cookie } from "../cookie";
 import { App, Request } from "../core";
 import BaseMiddleware from "../core/abstraction/BaseMiddleware";
-import { encrypt } from "../supports";
+import { encrypt } from "../supports/Encrypt";
 
 export default class CsrfToken extends BaseMiddleware {
 	protected isExceptPath = (path: string) => {

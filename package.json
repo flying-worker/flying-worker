@@ -60,15 +60,15 @@
 	},
 	"scripts": {
 		"test": "vitest",
-		"react-watch": "chokidar 'resources/**/*' -c 'react-router build'",
-		"react-build": "react-router build && cp -r public/* build/client/",
-		"dev": "wrangler dev && cp -r public/* build/client/",
-		"publish": "react-router build && cp -r public/* build/client/ && wrangler deploy",
 		"quality": "biome check .",
 		"quality:fix": "biome check . --write --unsafe",
-		"typecheck": "tsc --noEmit",
-		"generate-types": "wrangler types",
-		"type-check": "generate-types && tsc"
+
+		"build": "react-router build",
+		"cf-typegen": "wrangler types",
+		"deploy": "npm run build && wrangler deploy",
+		"dev": "react-router dev",
+		"preview": "npm run build && vite preview",
+		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
 	},
 	"keywords": ["worker", "typescript", "cloudflare worker", "Hono", "Remix"],
 	"author": "",
@@ -99,6 +99,7 @@
 		"wrangler": "^4.2.0"
 	},
 	"dependencies": {
+		"@cloudflare/vite-plugin": "^1.0.5",
 		"@react-router/cloudflare": "^7.5.0",
 		"@react-router/remix-routes-option-adapter": "^7.5.0",
 		"@rollup/plugin-inject": "^5.0.5",
