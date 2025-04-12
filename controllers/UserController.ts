@@ -58,11 +58,12 @@ export class UserController {
 		/**
 		 * @type {keyof typeof eventListener}
 		 */
-		const eventName: string = 'update-admin'
+		const eventName: string = 'test-event'
 
-		await Event.dispatch(eventName).delay('12h')
+		await Event.dispatch(eventName,     "emran").delay()
 
-		await Event.dispatch(eventName).process()
+
+		// await Event.dispatch(eventName).process()
 
 		return c.json({
 			message:  "Event Test success !",

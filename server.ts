@@ -2,6 +2,7 @@ import { ExecutionContext } from "@cloudflare/workers-types";
 import type { MessageBatch } from "@cloudflare/workers-types";
 import Application from "./bootstrap/App";
 import { Env } from "./types/declarations";
+import {Event} from "./src/event";
 
 export default {
 
@@ -9,13 +10,14 @@ export default {
 		return await Application.boot(request, env, ctx);
 	},
 
-	queue: async (batch: MessageBatch, env: Env) => {
-		for (let message of batch.messages) {
-		}
+	async queue(batch: MessageBatch<any>, env: Env, ctx: ExecutionContext) {
 
-		// for (const message of batch.messages) {
-		// 	// need to implement
-		// 	console.log(message, "messagess")
-		// }
+		await Application.bootQueue(env, ctx);
+
+		for (const message of batch.messages) {
+
+			await Event.dispatch(message.body.event, ...message.body.payload).process()
+
+		}
 	},
 };

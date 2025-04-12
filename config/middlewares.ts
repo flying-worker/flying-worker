@@ -1,5 +1,5 @@
 import RemixMiddleware from "../middlewares/RemixMiddleware";
-import RemixRegister from "../middlewares/RemixRegister";
+import RemixRegister from "../src/middlewares/ReactRouter";
 import TestMiddleware from "../middlewares/TestMiddleware";
 import {
 	Cors,

@@ -5,10 +5,10 @@ import { Env } from "../types/declarations";
 
 let honoApp: Hono;
 
-const initApp = async () => {
+const initApp = async (queue: boolean = false) => {
 	const config = await import("../config");
 
-	await App.boot(config.default);
+	await App.boot(config.default, queue);
 
 	honoApp = App.hono;
 };
@@ -25,15 +25,13 @@ export default {
 
 		return honoApp.fetch(request, env, ctx);
 	},
-	bootQueue: async (request: Request, env: Env, ctx: ExecutionContext) => {
-		App.setRequest(request);
+	bootQueue: async (env: Env, ctx: ExecutionContext) => {
 
 		if (!honoApp) {
 			App.setEnv(env);
 
-			await initApp();
+			await initApp(true);
 		}
 
-		return honoApp.fetch(request, env, ctx);
 	},
 };

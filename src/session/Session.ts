@@ -1,26 +1,15 @@
-import type { SessionStorage, Session as sessionType } from "react-router";
-// @ts-ignore
+
 import { getSession, getSessionStorage } from "remix-hono/session";
 import { Request as CustomRequest } from "../core";
 
 class SessionManager {
-	private session!: sessionType;
-	private sessionStorage!: SessionStorage;
 
 	public getSession() {
-		if (!this.session) {
-			this.session = getSession(CustomRequest.getContext());
-		}
-
-		return this.session;
+		return  getSession(CustomRequest.getContext());
 	}
 
 	public getStorage() {
-		if (!this.sessionStorage) {
-			this.sessionStorage = getSessionStorage(CustomRequest.getContext());
-		}
-
-		return this.sessionStorage;
+		return  getSessionStorage(CustomRequest.getContext());
 	}
 
 	public get(key: string, defaultValue: any = ""): any {
