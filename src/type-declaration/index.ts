@@ -12,6 +12,7 @@ import {
 	QueueConfig,
 	RolePermissionModelConstraint,
 	SessionConfig,
+	SocialAuth
 } from "./config";
 import { JWTPayload } from "./jwt";
 import { MiddlewareClass, MiddlewareInstance } from "./middleware";
@@ -49,4 +50,5 @@ export {
 	Events,
 	QueueConfig,
 	JWTPayload,
+	SocialAuth
 };

@@ -148,6 +148,30 @@ type SessionConfig = {
 	sameSite: boolean | "lax" | "strict" | "none";
 };
 
+type GoogleOAuth = {
+	clientId: string,
+	clientSecret: string,
+	redirectPath: string
+}
+
+type LinkedInOAuth = {
+	clientId: string,
+	clientSecret: string,
+	redirectPath: string
+}
+
+type XOAuth = {
+	clientId: string,
+	clientSecret: string,
+	redirectPath: string
+}
+
+export type SocialAuth = {
+	google?: GoogleOAuth
+	linkedin?: LinkedInOAuth
+	x?: XOAuth
+};
+
 type Config = {
 	app: AppConfig;
 	session: SessionConfig;
@@ -158,6 +182,7 @@ type Config = {
 	middlewares: MiddlewaresConfig;
 	eventListener: Events;
 	queue: QueueConfig;
+	socialAuth: SocialAuth;
 };
 
 export {

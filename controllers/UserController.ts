@@ -7,6 +7,7 @@ import {csrfToken} from "../src/supports";
 import {Event} from "../src/event";
 
 import { eventListener } from "../config/event-listener";
+import {z} from "zod";
 
 
 
@@ -37,6 +38,12 @@ export class UserController {
 	}
 
 	async testWeb(c: Context) {
+
+		  const AuthUserSchema = z.object({
+			id: z.number(),
+			name: z.string(),
+			email: z.string().email(),
+		});
 
 
 		// dd.delete("hello", "okokokok")

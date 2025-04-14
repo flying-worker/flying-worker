@@ -1,0 +1,103 @@
+import {App, Request} from "../../core";
+import {HTTPException, HTTPException as HTTPException2} from "hono/http-exception";
+import {Session} from "../../session";
+
+export class Linkedin {
+
+    private getState()
+    {
+        let rand =  Math.random().toString(36).substr(2);
+
+        return `${rand}-${rand}-${rand}`;
+    }
+
+    private toQueryParams(params: any) {
+        const elements = Object.keys(params);
+        elements.forEach((element) => {
+            if (params[element] === void 0) {
+                delete params[element];
+            }
+        });
+        return new URLSearchParams(params).toString();
+    }
+
+    public redirect()
+    {
+        const config = App.config.socialAuth?.linkedin ? App.config.socialAuth.linkedin : null
+        if(!config) {
+            throw new HTTPException2(401);
+        }
+
+        const newState = this.getState();
+
+        const parsedOptions = this.toQueryParams({
+            response_type: "code",
+            redirect_uri: Request.getBaseUrl(config.redirectPath),
+            client_id: config.clientId,
+            scope: ['email', 'openid', 'profile'].join(" "),
+            state: newState
+        });
+
+        Session.set('state', newState);
+
+        return Request.getContext().redirect( `https://www.linkedin.com/oauth/v2/authorization?${parsedOptions}` );
+    }
+
+    private async getTokenFromCode()
+    {
+
+        const config = App.config.socialAuth?.google ? App.config.socialAuth.google : null
+        if(!config) {
+            throw new HTTPException2(401);
+        }
+
+        if(!Request.input('code')) {
+            throw new Error("Code not found");
+        }
+
+        if(Request.input('code') !== Session.get('state')) {
+            throw new HTTPException2(401);
+        }
+
+        const params = this.toQueryParams({
+            grant_type: "authorization_code",
+            code: Request.input('code'),
+            client_id: config.clientId,
+            client_secret: config.clientSecret,
+            redirect_uri: Request.getBaseUrl(config.redirectPath),
+        });
+
+        const response = await fetch(`https://www.linkedin.com/oauth/v2/accessToken?${params}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        }).then((res) => res.json());
+        if ("error" in response) {
+            throw new HTTPException(400, { message: response.error_description });
+        }
+        if ("access_token" in response) {
+            return  response.access_token
+        }
+    }
+
+    async getUser()
+    {
+        const token = await this.getTokenFromCode();
+
+        const response = await fetch("https://api.linkedin.com/v2/userinfo", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((res) => res.json());
+        if ("message" in response) {
+            throw new HTTPException(400, { message: response.message });
+        }
+        if ("sub" in response) {
+           return  response;
+        }
+
+        return null
+    }
+
+}

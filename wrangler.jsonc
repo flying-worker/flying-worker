@@ -38,9 +38,9 @@
 		}
 	],
 
-	"ai": {
-		"binding": "AI"
-	},
+//	"ai": {
+//		"binding": "AI"
+//	},
 
 	"queues": {
 		"producers": [

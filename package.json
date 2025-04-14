@@ -62,7 +62,6 @@
 		"test": "vitest",
 		"quality": "biome check .",
 		"quality:fix": "biome check . --write --unsafe",
-
 		"build": "react-router build",
 		"cf-typegen": "wrangler types",
 		"deploy": "npm run build && wrangler deploy",
@@ -70,19 +69,25 @@
 		"preview": "npm run build && vite preview",
 		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
 	},
-	"keywords": ["worker", "typescript", "cloudflare worker", "Hono", "Remix"],
+	"keywords": [
+		"worker",
+		"typescript",
+		"cloudflare worker",
+		"Hono",
+		"Remix"
+	],
 	"author": "",
 	"license": "MIT",
 	"resolutions": {
 		"sourcemap-codec": "@jridgewell/sourcemap-codec"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@cloudflare/vite-plugin": "^1.0.5",
 		"@cloudflare/workers-types": "^4.20250410.0",
 		"@react-router/dev": "^7.5.0",
-		"@cloudflare/vite-plugin": "^1.0.5",
-		"@types/node": "^20",
-		"@biomejs/biome": "^1.9.4",
 		"@tailwindcss/vite": "^4.0.0",
+		"@types/node": "^20",
 		"@types/react": "^19.0.0",
 		"@types/react-dom": "^19.0.0",
 		"tailwindcss": "^4.0.0",
@@ -96,18 +101,20 @@
 		"wrangler": "4.10.0"
 	},
 	"dependencies": {
+		"@hono/oauth-providers": "^0.7.1",
+		"@react-router/cloudflare": "^7.5.0",
+		"@react-router/remix-routes-option-adapter": "^7.5.0",
+		"@vinejs/vine": "^3.0.1",
 		"bcryptjs": "^3.0.2",
+		"dotenv": "^16.4.7",
 		"drizzle-orm": "^0.40.1",
 		"hono": "^4.7.6",
 		"isbot": "^5.1.26",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-router": "^7.5.0",
-		"@react-router/remix-routes-option-adapter": "^7.5.0",
-		"@react-router/cloudflare": "^7.5.0",
 		"remix-hono": "^0.0.18",
 		"rimraf": "^5.0.10",
-		"zod": "^3.24.2",
-		"dotenv": "^16.4.7"
+		"zod": "^3.24.2"
 	}
 }

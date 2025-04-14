@@ -8,6 +8,7 @@ import { eventListener } from "./event-listener";
 import { middlewaresConfig } from "./middlewares";
 import { queue } from "./queue";
 import { sessionConfig } from "./session";
+import { socialAuth } from "./social-auth";
 
 const config: Config = {
 	app: appConfig,
@@ -19,6 +20,7 @@ const config: Config = {
 	middlewares: middlewaresConfig,
 	eventListener: eventListener,
 	queue: queue,
+	socialAuth: socialAuth,
 };
 
 export default config;

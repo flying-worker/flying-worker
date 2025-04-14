@@ -14,6 +14,8 @@ import { UserController } from "../controllers/UserController";
 import Auth from "../src/auth/Auth";
 import { App } from "../src/core";
 import { Route } from "../src/route";
+import { Request } from "../src/core";
+
 
 App.hono.post("test-001", async (context: Context) => {
 	return context.json({
@@ -22,11 +24,15 @@ App.hono.post("test-001", async (context: Context) => {
 });
 
 Route.get("/web", async (context: Context) => {
+
 	return context.json({
-		dd: await Auth.attempt({ email: "admin@admin.com" }),
+		dd: Request.getRequest().url,
 	});
 });
 
 Route.get("/test", [UserController, "testWeb"]);
 
 Route.get("/test/user", [UserController, "user"]);
+
+
+

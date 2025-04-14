@@ -8,6 +8,9 @@ class RequestData {
 	private headers: Record<string, string> = {};
 	private context!: Context;
 
+	private baseUrl!: string;
+	private path!: string;
+
 	constructor(request: Request) {
 		this.request = request;
 		this.init(request).then((r) => "done");
@@ -32,6 +35,9 @@ class RequestData {
 		const url = new URL(request.url);
 		const queryParams = Object.fromEntries(url.searchParams.entries());
 		this.requestData = { ...queryParams, ...this.requestData };
+
+		this.baseUrl = `${url.protocol}//${url.host}`
+		this.path = url.pathname
 
 		// Store headers
 		this.headers = {};
@@ -64,6 +70,7 @@ class RequestData {
 		return this.request;
 	}
 
+
 	header(key: string, defaultValue = "") {
 		return this.headers[key.toLowerCase()] ?? defaultValue;
 	}
@@ -82,6 +89,18 @@ class RequestData {
 			this.header("x-real-ip") ||
 			"127.0.0.1"
 		);
+	}
+
+	getUrl() {
+		return this.request.url
+	}
+
+	public getBaseUrl(path: string = '') {
+		return this.baseUrl + path
+	}
+
+	public getPath() {
+		return this.path
 	}
 }
 
