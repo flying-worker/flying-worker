@@ -1,14 +1,14 @@
 import {App, Request} from "../../core";
 import {HTTPException, HTTPException as HTTPException2} from "hono/http-exception";
 import {Session} from "../../session";
+import {SocialAuthUser} from "../../type-declaration";
+import {Str} from "../../supports";
 
 export class Linkedin {
 
     private getState()
     {
-        let rand =  Math.random().toString(36).substr(2);
-
-        return `${rand}-${rand}-${rand}`;
+        return  Str.uuid();
     }
 
     private toQueryParams(params: any) {
@@ -34,7 +34,7 @@ export class Linkedin {
             response_type: "code",
             redirect_uri: Request.getBaseUrl(config.redirectPath),
             client_id: config.clientId,
-            scope: ['email', 'openid', 'profile'].join(" "),
+            scope: config.scopes.join(" "),
             state: newState
         });
 
@@ -46,7 +46,7 @@ export class Linkedin {
     private async getTokenFromCode()
     {
 
-        const config = App.config.socialAuth?.google ? App.config.socialAuth.google : null
+        const config = App.config.socialAuth?.linkedin ? App.config.socialAuth.linkedin : null
         if(!config) {
             throw new HTTPException2(401);
         }
@@ -55,7 +55,7 @@ export class Linkedin {
             throw new Error("Code not found");
         }
 
-        if(Request.input('code') !== Session.get('state')) {
+        if(Request.input('state') !== Session.get('state')) {
             throw new HTTPException2(401);
         }
 
@@ -81,7 +81,7 @@ export class Linkedin {
         }
     }
 
-    async getUser()
+    async getUser(): Promise<SocialAuthUser | null>
     {
         const token = await this.getTokenFromCode();
 
@@ -94,7 +94,12 @@ export class Linkedin {
             throw new HTTPException(400, { message: response.message });
         }
         if ("sub" in response) {
-           return  response;
+           return {
+               id: response.sub,
+               name: response.name,
+               email: response.email,
+               avatar: response.picture,
+           };
         }
 
         return null

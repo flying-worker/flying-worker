@@ -25,6 +25,16 @@ import {
 } from "./model";
 import { DefineRouteFunction, HandlerFunction, HttpMethod } from "./route";
 
+export type SocialAuthUser = {
+	"id": string,
+	"email"?: string,
+	"name": string,
+	"username"?: string
+	"avatar": string
+}
+
+
+
 export {
 	MiddlewareAliasType,
 	AppConfig,

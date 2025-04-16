@@ -44,7 +44,7 @@ export default function Welcome() {
 
                     <main className="mt-6">
                         <div>
-                            <img src="assets/thumbnail.png" alt=""/>
+                          DOPLAC
                         </div>
                     </main>
 

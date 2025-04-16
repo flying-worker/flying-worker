@@ -158,18 +158,29 @@ type LinkedInOAuth = {
 	clientId: string,
 	clientSecret: string,
 	redirectPath: string
+	scopes: string[]
 }
 
 type XOAuth = {
 	clientId: string,
 	clientSecret: string,
 	redirectPath: string
+	scopes: string[]
+}
+
+type Github = {
+	clientId: string,
+	clientSecret: string,
+	redirectPath: string
+	scopes?: string[]
+	oauthApp?: boolean
 }
 
 export type SocialAuth = {
 	google?: GoogleOAuth
 	linkedin?: LinkedInOAuth
 	x?: XOAuth
+	github?: Github
 };
 
 type Config = {

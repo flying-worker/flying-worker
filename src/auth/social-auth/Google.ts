@@ -1,14 +1,14 @@
 import {App, Request} from "../../core";
-import {HTTPException, HTTPException as HTTPException2} from "hono/http-exception";
+import {HTTPException} from "hono/http-exception";
 import {Session} from "../../session";
+import {SocialAuthUser} from "../../type-declaration";
+import {Str} from "../../supports";
 
 export class Google {
 
     private getState()
     {
-        let rand =  Math.random().toString(36).substr(2);
-
-        return `${rand}-${rand}-${rand}`;
+      return  Str.uuid();
     }
 
    private toQueryParams(params: any) {
@@ -25,7 +25,7 @@ export class Google {
     {
         const config = App.config.socialAuth?.google ? App.config.socialAuth.google : null
         if(!config) {
-            throw new HTTPException2(401);
+            throw new HTTPException(401);
         }
 
         const newState = this.getState();
@@ -48,15 +48,15 @@ export class Google {
 
         const config = App.config.socialAuth?.google ? App.config.socialAuth.google : null
         if(!config) {
-            throw new HTTPException2(401);
+            throw new HTTPException(401);
         }
 
         if(!Request.input('code')) {
             throw new Error("Code not found");
         }
 
-        if(Request.input('code') !== Session.get('state')) {
-            throw new HTTPException2(401);
+        if(Request.input('state') !== Session.get('state')) {
+            throw new HTTPException(401);
         }
 
         const response = await fetch("https://oauth2.googleapis.com/token", {
@@ -74,6 +74,8 @@ export class Google {
             })
         }).then((res) => res.json());
 
+        Session.forget('state')
+
         if ("error" in response) {
             throw new HTTPException(400, { message: response.error_description });
         }
@@ -83,7 +85,8 @@ export class Google {
         }
     }
 
-    async getUser() {
+    async getUser(): Promise<SocialAuthUser | null>
+    {
        const token = await this.getTokenFromCode();
 
         const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
@@ -94,8 +97,15 @@ export class Google {
         if ("error" in response) {
             throw new HTTPException(400, { message: response.error?.message });
         }
+
         if ("id" in response) {
-           return  response;
+
+           return {
+               "id": response.id,
+               "email": response.email,
+               "name": response.name,
+               "avatar": response.picture
+           };
         }
 
         return null

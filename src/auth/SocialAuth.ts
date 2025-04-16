@@ -1,8 +1,9 @@
 import {Google} from "./social-auth/Google";
 import {Linkedin} from "./social-auth/Linkedin";
 import {Twitter} from "./social-auth/Twitter";
+import {Github} from "./social-auth/Github";
 
-class SocialAuth {
+export default class SocialAuth {
 
 	static google()
 	{
@@ -17,5 +18,10 @@ class SocialAuth {
 	static x()
 	{
 		return new Twitter()
+	}
+
+	static github()
+	{
+		return new Github()
 	}
 }

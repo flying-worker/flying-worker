@@ -1,14 +1,21 @@
 import {App, Request} from "../../core";
-import {HTTPException, HTTPException as HTTPException2} from "hono/http-exception";
+import {HTTPException} from "hono/http-exception";
 import {Session} from "../../session";
+import {Str} from "../../supports";
+
+type User = {
+    "name": string,
+    "id": string
+    "username": string,
+    "avatar": string
+}
+
 
 export class Twitter {
 
     private getState()
     {
-        let rand =  Math.random().toString(36).substr(2);
-
-        return `${rand}-${rand}-${rand}`;
+        return  Str.uuid();
     }
 
    private toQueryParams(params: any) {
@@ -50,7 +57,7 @@ export class Twitter {
     {
         const config = App.config.socialAuth?.x ? App.config.socialAuth.x : null
         if(!config) {
-            throw new HTTPException2(401);
+            throw new HTTPException(401);
         }
 
         const newState = this.getState();
@@ -60,13 +67,15 @@ export class Twitter {
             response_type: "code",
             redirect_uri: Request.getBaseUrl(config.redirectPath),
             client_id: config.clientId,
-            scope: ['tweet.read', 'users.read', 'offline.access'],
+            scope: config.scopes.join(" "),
             state: newState,
             code_challenge: challenge.codeChallenge,
             code_challenge_method: "S256"
         });
 
+
         Session.set('state', newState);
+        Session.set('x-codeVerifier', challenge.codeVerifier);
 
         return Request.getContext().redirect( `https://x.com/i/oauth2/authorize?${parsedOptions}` );
     }
@@ -75,15 +84,15 @@ export class Twitter {
 
         const config = App.config.socialAuth?.x ? App.config.socialAuth.x : null
         if(!config) {
-            throw new HTTPException2(401);
+            throw new HTTPException(401);
         }
 
         if(!Request.input('code')) {
             throw new Error("Code not found");
         }
 
-        if(Request.input('code') !== Session.get('state')) {
-            throw new HTTPException2(401);
+        if(Request.input('state') !== Session.get('state')) {
+            throw new HTTPException(401);
         }
 
         const challenge = await this.getCodeChallenge();
@@ -92,7 +101,7 @@ export class Twitter {
             grant_type: "authorization_code",
             client_id: config.clientId,
             redirect_uri: Request.getBaseUrl(config.redirectPath),
-            code_verifier: challenge.codeVerifier,
+            code_verifier: Session.get("x-codeVerifier"),
         });
 
         const authToken = btoa(`${encodeURIComponent(config.clientId)}:${encodeURIComponent(config.clientSecret)}`);
@@ -112,12 +121,14 @@ export class Twitter {
         }
     }
 
-    async getUser() {
+    async getUser(): Promise<User | null>
+    {
        const token = await this.getTokenFromCode();
 
         const parsedOptions = this.toQueryParams({
-            "user.fields": ['profile_image_url', 'url']
+            "user.fields": ['profile_image_url']
         });
+
 
         const response = await fetch(`https://api.twitter.com/2/users/me?${parsedOptions}`, {
             headers: {
@@ -127,8 +138,15 @@ export class Twitter {
         if ("error_description" in response) {
             throw new HTTPException(400, { message: response.error_description });
         }
+
         if ("data" in response) {
-          return response.data;
+
+            return {
+                "name": response.data.name,
+                "id": response.data.id,
+                "username": response.data.username,
+                "avatar": response.data.profile_image_url
+            }
         }
 
         return null

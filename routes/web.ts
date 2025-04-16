@@ -15,6 +15,7 @@ import Auth from "../src/auth/Auth";
 import { App } from "../src/core";
 import { Route } from "../src/route";
 import { Request } from "../src/core";
+import { SocialAuth } from "../src/auth";
 
 
 App.hono.post("test-001", async (context: Context) => {
@@ -24,9 +25,13 @@ App.hono.post("test-001", async (context: Context) => {
 });
 
 Route.get("/web", async (context: Context) => {
+	return  SocialAuth.github().redirect()
+});
 
+Route.get("/web/callback", async (context: Context) => {
 	return context.json({
-		dd: Request.getRequest().url,
+		dd: await SocialAuth.github().getUser(),
+		d: "oko"
 	});
 });
 
