@@ -36,8 +36,8 @@ class RequestData {
 		const queryParams = Object.fromEntries(url.searchParams.entries());
 		this.requestData = { ...queryParams, ...this.requestData };
 
-		this.baseUrl = `${url.protocol}//${url.host}`
-		this.path = url.pathname
+		this.baseUrl = `${url.protocol}//${url.host}`;
+		this.path = url.pathname;
 
 		// Store headers
 		this.headers = {};
@@ -70,7 +70,6 @@ class RequestData {
 		return this.request;
 	}
 
-
 	header(key: string, defaultValue = "") {
 		return this.headers[key.toLowerCase()] ?? defaultValue;
 	}
@@ -92,15 +91,15 @@ class RequestData {
 	}
 
 	getUrl() {
-		return this.request.url
+		return this.request.url;
 	}
 
-	public getBaseUrl(path: string = '') {
-		return this.baseUrl + path
+	public getBaseUrl(path = "") {
+		return this.baseUrl + path;
 	}
 
 	public getPath() {
-		return this.path
+		return this.path;
 	}
 }
 

@@ -149,38 +149,38 @@ type SessionConfig = {
 };
 
 type GoogleOAuth = {
-	clientId: string,
-	clientSecret: string,
-	redirectPath: string
-}
+	clientId: string;
+	clientSecret: string;
+	redirectPath: string;
+};
 
 type LinkedInOAuth = {
-	clientId: string,
-	clientSecret: string,
-	redirectPath: string
-	scopes: string[]
-}
+	clientId: string;
+	clientSecret: string;
+	redirectPath: string;
+	scopes: string[];
+};
 
 type XOAuth = {
-	clientId: string,
-	clientSecret: string,
-	redirectPath: string
-	scopes: string[]
-}
+	clientId: string;
+	clientSecret: string;
+	redirectPath: string;
+	scopes: string[];
+};
 
 type Github = {
-	clientId: string,
-	clientSecret: string,
-	redirectPath: string
-	scopes?: string[]
-	oauthApp?: boolean
-}
+	clientId: string;
+	clientSecret: string;
+	redirectPath: string;
+	scopes?: string[];
+	oauthApp?: boolean;
+};
 
 export type SocialAuth = {
-	google?: GoogleOAuth
-	linkedin?: LinkedInOAuth
-	x?: XOAuth
-	github?: Github
+	google?: GoogleOAuth;
+	linkedin?: LinkedInOAuth;
+	x?: XOAuth;
+	github?: Github;
 };
 
 type Config = {

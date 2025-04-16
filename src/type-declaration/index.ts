@@ -12,7 +12,7 @@ import {
 	QueueConfig,
 	RolePermissionModelConstraint,
 	SessionConfig,
-	SocialAuth
+	SocialAuth,
 } from "./config";
 import { JWTPayload } from "./jwt";
 import { MiddlewareClass, MiddlewareInstance } from "./middleware";
@@ -26,14 +26,12 @@ import {
 import { DefineRouteFunction, HandlerFunction, HttpMethod } from "./route";
 
 export type SocialAuthUser = {
-	"id": string,
-	"email"?: string,
-	"name": string,
-	"username"?: string
-	"avatar": string
-}
-
-
+	id: string;
+	email?: string;
+	name: string;
+	username?: string;
+	avatar: string;
+};
 
 export {
 	MiddlewareAliasType,
@@ -60,5 +58,5 @@ export {
 	Events,
 	QueueConfig,
 	JWTPayload,
-	SocialAuth
+	SocialAuth,
 };

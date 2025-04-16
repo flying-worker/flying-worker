@@ -1,128 +1,122 @@
-import {App, Request} from "../../core";
-import {HTTPException} from "hono/http-exception";
-import {Session} from "../../session";
-import {SocialAuthUser} from "../../type-declaration";
-import {Str} from "../../supports";
-import {string} from "zod";
+import { HTTPException } from "hono/http-exception";
+import { App, Request } from "../../core";
+import { Session } from "../../session";
+import { Str } from "../../supports";
+import { SocialAuthUser } from "../../type-declaration";
 
-
-const userAgent: string = "FlyingWorker-Auth-App"
+const userAgent: string = "FlyingWorker-Auth-App";
 
 export class Github {
+	private getState() {
+		return Str.uuid();
+	}
 
-    private getState()
-    {
-      return  Str.uuid();
-    }
+	public redirect() {
+		const config = App.config.socialAuth?.github
+			? App.config.socialAuth.github
+			: null;
+		if (!config) {
+			throw new HTTPException(401);
+		}
 
-   private toQueryParams(params: any) {
-        const elements = Object.keys(params);
-        elements.forEach((element) => {
-            if (params[element] === void 0) {
-                delete params[element];
-            }
-        });
-        return new URLSearchParams(params).toString();
-    }
+		const newState = this.getState();
 
-    public redirect()
-    {
-        const config = App.config.socialAuth?.github ? App.config.socialAuth.github : null
-        if(!config) {
-            throw new HTTPException(401);
-        }
+		let options: {
+			client_id: string;
+			state: string;
+			oauthApp: boolean;
+			scope?: string[];
+			redirect_uri?: string;
+		} = {
+			client_id: config.clientId,
+			state: newState,
+			oauthApp: false,
+			redirect_uri: Request.getBaseUrl(config.redirectPath),
+		};
 
-        const newState = this.getState();
+		// For GitHub apps, the scope is configured during the app setup / creation.
+		// For OAuth apps, we need to provide the scope.
 
-        let options: {
-            client_id: string;
-            state: string;
-            oauthApp: boolean;
-            scope?: string[];
-            redirect_uri?: string
-        } = {
-            client_id: config.clientId,
-            state: newState,
-            oauthApp: false,
-            redirect_uri: Request.getBaseUrl(config.redirectPath),
-        };
+		if (config.oauthApp) {
+			options.oauthApp = true;
+			options.scope = config.scopes ?? [];
 
-        // For GitHub apps, the scope is configured during the app setup / creation.
-        // For OAuth apps, we need to provide the scope.
+			options.redirect_uri = undefined;
+		}
 
-        if (config.oauthApp) {
-            options.oauthApp = true;
-            options.scope = config.scopes ?? [];
+		const queryParams = Str.toQueryParams(options);
 
-            delete options.redirect_uri
-        }
+		Session.set("state", newState);
 
-        const queryParams = this.toQueryParams(options);
+		return Request.getContext().redirect(
+			`https://github.com/login/oauth/authorize?${queryParams}`,
+		);
+	}
 
-        Session.set('state', newState);
+	private async getTokenFromCode() {
+		const config = App.config.socialAuth?.github
+			? App.config.socialAuth.github
+			: null;
+		if (!config) {
+			throw new HTTPException(401);
+		}
 
-        return Request.getContext().redirect( `https://github.com/login/oauth/authorize?${queryParams}` );
-    }
+		if (!Request.input("code")) {
+			throw new Error("Code not found");
+		}
 
-    private async getTokenFromCode() {
-        const config = App.config.socialAuth?.github ? App.config.socialAuth.github : null
-        if(!config) {
-            throw new HTTPException(401);
-        }
+		if (Request.input("state") !== Session.get("state")) {
+			throw new HTTPException(401);
+		}
 
-        if(!Request.input('code')) {
-            throw new Error("Code not found");
-        }
+		const response = await fetch(
+			"https://github.com/login/oauth/access_token",
+			{
+				method: "POST",
+				body: JSON.stringify({
+					client_id: config.clientId,
+					client_secret: config.clientSecret,
+					code: Request.input("code"),
+				}),
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+			},
+		).then((res) => res.json());
+		if ("error_description" in response) {
+			throw new HTTPException(400, { message: response.error_description });
+		}
+		if ("access_token" in response) {
+			return response.access_token;
+		}
+	}
 
-        if(Request.input('state') !== Session.get('state')) {
-            throw new HTTPException(401);
-        }
+	async getUser(): Promise<SocialAuthUser | null> {
+		const token = await this.getTokenFromCode();
 
-        const response = await fetch("https://github.com/login/oauth/access_token", {
-            method: "POST",
-            body: JSON.stringify({
-                client_id: config.clientId,
-                client_secret: config.clientSecret,
-                code: Request.input('code')
-            }),
-            headers: { Accept: "application/json", "Content-Type": "application/json" }
-        }).then((res) => res.json());
-        if ("error_description" in response) {
-            throw new HTTPException(400, { message: response.error_description });
-        }
-        if ("access_token" in response) {
-            return  response.access_token
-        }
-    }
+		const response = await fetch("https://api.github.com/user", {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				"User-Agent": userAgent,
+			},
+		}).then((res) => res.json());
 
-    async getUser(): Promise<SocialAuthUser | null>
-    {
-       const token = await this.getTokenFromCode();
+		if ("message" in response) {
+			throw new HTTPException(400, { message: `${response.message}okokok` });
+		}
 
-        const response = await fetch("https://api.github.com/user", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "User-Agent": userAgent
-            }
-        }).then((res) => res.json());
+		if ("id" in response) {
+			return {
+				id: response.id,
+				email: response.email,
+				name: response.name,
+				avatar: response.avatar_url,
+			};
+		}
 
-        if ("message" in response) {
-            throw new HTTPException(400, { message: response.message + "okokok"});
-        }
-
-        if ("id" in response) {
-
-           return {
-               "id": response.id,
-               "email": response.email,
-               "name": response.name,
-               "avatar": response.avatar_url
-           };
-        }
-
-        return null
-    }
-
+		return null;
+	}
 }

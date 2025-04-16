@@ -30,4 +30,13 @@ export const Str = {
 			.replace(/[^a-z0-9]+/g, separator)
 			.replace(new RegExp(`^${separator}|${separator}$`, "g"), "");
 	},
+	toQueryParams(params: any) {
+		for (const key in params) {
+			if (params[key] === void 0) {
+				delete params[key];
+			}
+		}
+
+		return new URLSearchParams(params).toString();
+	},
 };

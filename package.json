@@ -69,13 +69,7 @@
 		"preview": "npm run build && vite preview",
 		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
 	},
-	"keywords": [
-		"worker",
-		"typescript",
-		"cloudflare worker",
-		"Hono",
-		"Remix"
-	],
+	"keywords": ["worker", "typescript", "cloudflare worker", "Hono", "Remix"],
 	"author": "",
 	"license": "MIT",
 	"resolutions": {

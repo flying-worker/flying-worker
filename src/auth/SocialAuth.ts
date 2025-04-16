@@ -1,27 +1,24 @@
-import {Google} from "./social-auth/Google";
-import {Linkedin} from "./social-auth/Linkedin";
-import {Twitter} from "./social-auth/Twitter";
-import {Github} from "./social-auth/Github";
+import { Github } from "./social-auth/Github";
+import { Google } from "./social-auth/Google";
+import { Linkedin } from "./social-auth/Linkedin";
+import { Twitter } from "./social-auth/Twitter";
 
-export default class SocialAuth {
+const SocialAuth = {
+	google() {
+		return new Google();
+	},
 
-	static google()
-	{
-		return new Google()
-	}
+	linkedin() {
+		return new Linkedin();
+	},
 
-	static linkedin()
-	{
-		return new Linkedin()
-	}
+	x() {
+		return new Twitter();
+	},
 
-	static x()
-	{
-		return new Twitter()
-	}
+	github() {
+		return new Github();
+	},
+};
 
-	static github()
-	{
-		return new Github()
-	}
-}
+export default SocialAuth;
