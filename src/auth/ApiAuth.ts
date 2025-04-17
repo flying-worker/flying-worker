@@ -15,6 +15,7 @@ import {
 import { JwtGuardConfigSchema, JwtTokenPayloadSchema } from "../zod-schema";
 
 class JwtAuthManager {
+
 	public async createToken(payload: ApiTokenPayload): Promise<string | null> {
 		JwtTokenPayloadSchema.parse(payload);
 
@@ -38,8 +39,7 @@ class JwtAuthManager {
 				`select * from ${currentGuardData.userTable} where id =  ${payload.user.id}`,
 			);
 
-			const userFromDatabase: { [key: string]: any } | undefined =
-				await DB().get(statement);
+			const userFromDatabase: { [key: string]: any } | undefined = await DB().get(statement);
 
 			if (!userFromDatabase?.id) {
 				throw new Error("User not found");
@@ -68,6 +68,7 @@ class JwtAuthManager {
 				  )
 				`);
 
+
 			await DB().run(statement);
 		}
 
@@ -77,6 +78,7 @@ class JwtAuthManager {
 
 		return token;
 	}
+
 
 	public async delete(deleteAll = false) {
 		const payload: ApiTokenPayload | null =

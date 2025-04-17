@@ -18,6 +18,9 @@ type AuthData = {
 };
 
 class AuthManager {
+
+	private guardsName: string|null = null;
+
 	public async logout() {
 		await this.regenerateSession();
 		Cookie.delete("remember_login");
@@ -35,14 +38,25 @@ class AuthManager {
 		}
 	}
 
+	public guard(guard: string){
+		this.guardsName = guard
+
+		return this
+	}
+
 	public async login(user: AuthUser, remember = false): Promise<void> {
+
 		AuthUserSchema.parse(user);
 
 		await this.regenerateSession();
 
+		if(!this.guardsName){
+			this.guardsName = App.config.auth.defaultGuard
+		}
+
 		// Set new session data
 		const key = this.sessionKey();
-		Session.set(key, { guard: App.config.auth.defaultGuard, userId: user.id });
+		Session.set(key, { guard: this.guardsName, userId: user.id });
 
 		App.addToCurrentState("authUser", await this.formatUserData(user));
 
@@ -68,8 +82,12 @@ class AuthManager {
 
 		remember = false,
 	): Promise<any> {
-		const userTable =
-			App.config.auth.guards[App.config.auth.defaultGuard].userTable;
+
+		if(!this.guardsName){
+			this.guardsName = App.config.auth.defaultGuard
+		}
+
+		const userTable = App.config.auth.guards[this.guardsName].userTable;
 
 		if (!userTable) {
 			throw new Error("Auth table not set in config/app.ts");
@@ -125,13 +143,16 @@ class AuthManager {
 	}
 
 	public check(guard?: string): boolean {
-		const currentGuard = guard ?? App.config.auth.defaultGuard;
+
+		if(!this.guardsName){
+			this.guardsName = guard ?? App.config.auth.defaultGuard;
+		}
 
 		const key = this.sessionKey();
 
 		const authData: AuthData | null = Session.get(key);
 
-		return !!(authData && authData.guard === currentGuard);
+		return !!(authData && authData.guard === this.guardsName);
 	}
 
 	public async user(): Promise<AuthenticatedUser | null> {
