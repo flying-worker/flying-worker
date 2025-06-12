@@ -10,7 +10,6 @@ import {
 	MiddlewareAliasType,
 	MiddlewaresConfig,
 	QueueConfig,
-	RolePermissionModelConstraint,
 	SessionConfig,
 	SocialAuth,
 } from "./config";
@@ -48,7 +47,6 @@ export {
 	AuthenticatedUser,
 	TokenData,
 	RolePermission,
-	RolePermissionModelConstraint,
 	DefineRouteFunction,
 	ApiTokenPayload,
 	JwtGuardConfig,

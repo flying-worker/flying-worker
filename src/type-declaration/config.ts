@@ -1,33 +1,7 @@
-import { type Table, type TableConfig } from "drizzle-orm";
-import { Column, ColumnBaseConfig } from "drizzle-orm";
 import { Context } from "hono";
 import BaseMiddleware from "../core/abstraction/BaseMiddleware";
 import BaseListener from "../event/BaseListener";
 
-type UserModelConstraint = Table<TableConfig> & {
-	id: Column<ColumnBaseConfig<"number", string>>;
-	email: Column<ColumnBaseConfig<"string", string>>;
-	provider_name: Column<ColumnBaseConfig<"string", string>>;
-	provider_id: Column<ColumnBaseConfig<"string", string>>;
-	avatar: Column<ColumnBaseConfig<"string", string>>;
-	remember_token: Column<ColumnBaseConfig<"string", string>>;
-};
-
-type RolePermissionModelConstraint = Table<TableConfig> & {
-	id: Column<ColumnBaseConfig<"number", string>>;
-	user_id: Column<ColumnBaseConfig<"number", string>>;
-	role: Column<ColumnBaseConfig<"string", string>>;
-	permissions: Column<ColumnBaseConfig<"string", string>>;
-};
-
-type TokenModelConstraint = Table<TableConfig> & {
-	id: Column<ColumnBaseConfig<"number", string>>;
-	user_id: Column<ColumnBaseConfig<"number", string>>;
-	name: Column<ColumnBaseConfig<"string", string>>;
-	token: Column<ColumnBaseConfig<"string", string>>;
-	permissions: Column<ColumnBaseConfig<"string", string>>;
-	expires_at: Column<ColumnBaseConfig<"string", string>>;
-};
 
 export interface SessionGuardConfig {
 	driver: "session";
@@ -50,7 +24,8 @@ export interface JwtGuardConfig {
 }
 
 interface AuthConfig {
-	defaultGuard: string;
+	defaultWebGuard: string;
+	defaultApiGuard: string;
 	guards: {
 		web: SessionGuardConfig;
 		api: JwtGuardConfig;
@@ -203,7 +178,6 @@ export {
 	AuthConfig,
 	Config,
 	DatabaseConfig,
-	RolePermissionModelConstraint,
 	CorsConfig,
 	CsrfTokenConfig,
 	MiddlewaresConfig,

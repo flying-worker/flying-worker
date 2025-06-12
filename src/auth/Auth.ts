@@ -17,7 +17,7 @@ type AuthData = {
 	userId: number;
 };
 
-class AuthManager {
+export class AuthManager {
 
 	private guardsName: string|null = null;
 
@@ -51,7 +51,7 @@ class AuthManager {
 		await this.regenerateSession();
 
 		if(!this.guardsName){
-			this.guardsName = App.config.auth.defaultGuard
+			this.guardsName = App.config.auth.defaultWebGuard
 		}
 
 		// Set new session data
@@ -84,7 +84,7 @@ class AuthManager {
 	): Promise<any> {
 
 		if(!this.guardsName){
-			this.guardsName = App.config.auth.defaultGuard
+			this.guardsName = App.config.auth.defaultWebGuard
 		}
 
 		const userTable = App.config.auth.guards[this.guardsName].userTable;
@@ -109,7 +109,7 @@ class AuthManager {
 
 		const whereClause =
 			conditions.length > 0 ? `where ${conditions.join(" and ")}` : "";
-		const statement = sql.raw(`select * from ${userTable} ${whereClause}`);
+		const statement = sql`select * from ${userTable} ${whereClause}`;
 
 		const user: { [x: string]: any } | undefined = await DB().get(statement);
 
@@ -145,7 +145,7 @@ class AuthManager {
 	public check(guard?: string): boolean {
 
 		if(!this.guardsName){
-			this.guardsName = guard ?? App.config.auth.defaultGuard;
+			this.guardsName = guard ?? App.config.auth.defaultWebGuard;
 		}
 
 		const key = this.sessionKey();
@@ -184,9 +184,7 @@ class AuthManager {
 		let rolePermissions: [RolePermission] | [] = [];
 
 		if (!user?.rolePermissions && RolePermissionTable) {
-			const statement = sql.raw(
-				`select * from ${RolePermissionTable} where user_id = ${user.id}`,
-			);
+			const statement = sql`select * from ${RolePermissionTable} where user_id = ${user.id}`;
 
 			const rolePermissionsFromDb: { [x: string]: number | string }[] =
 				await DB().all(statement);
@@ -245,9 +243,7 @@ class AuthManager {
 	private async setUser(data: AuthData) {
 		const userTable = App.config.auth.guards[data.guard].userTable;
 
-		const statement = sql.raw(
-			`select * from ${userTable} where id =  ${data.userId}`,
-		);
+		const statement = sql`select * from ${userTable} where id =  ${data.userId}`;
 
 		const user: { [x: string]: any } | undefined = await DB().get(statement);
 
@@ -263,6 +259,8 @@ class AuthManager {
 	}
 }
 
-const Auth: AuthManager = new AuthManager();
-
-export default Auth;
+export const resolveSessionAuth = (): AuthManager => {
+	return  App.getContainer().resolve('SessionAuth', ()=>{
+		return new AuthManager();
+	})
+};

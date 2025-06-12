@@ -14,6 +14,7 @@ import { UserController } from "../controllers/UserController";
 import { SocialAuth } from "../src/auth";
 import { App } from "../src/core";
 import { Route } from "../src/route";
+import {JwtAuth} from "../src/auth";
 
 App.hono.post("test-001", async (context: Context) => {
 	return context.json({
@@ -22,7 +23,10 @@ App.hono.post("test-001", async (context: Context) => {
 });
 
 Route.get("/web", async (context: Context) => {
-	return SocialAuth.github().redirect();
+	return context.json({
+		auth: await JwtAuth.user()
+	});
+	// return SocialAuth.github().redirect();
 });
 
 Route.get("/web/callback", async (context: Context) => {

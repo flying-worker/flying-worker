@@ -12,11 +12,14 @@ import {
 	JwtGuardConfig,
 	RolePermission,
 } from "../type-declaration";
+
 import { JwtGuardConfigSchema, JwtTokenPayloadSchema } from "../zod-schema";
 
-class JwtAuthManager {
+
+export  class JwtAuthManager {
 
 	public async createToken(payload: ApiTokenPayload): Promise<string | null> {
+
 		JwtTokenPayloadSchema.parse(payload);
 
 		const now = (Date.now() / 1e3) | 0; // Current Unix timestamp in seconds
@@ -35,9 +38,7 @@ class JwtAuthManager {
 		payload.expiresInDays = undefined;
 
 		if (currentGuardData.userTable) {
-			const statement = sql.raw(
-				`select * from ${currentGuardData.userTable} where id =  ${payload.user.id}`,
-			);
+			const statement = sql`select * from ${currentGuardData.userTable} where id =  ${payload.user.id}`;
 
 			const userFromDatabase: { [key: string]: any } | undefined = await DB().get(statement);
 
@@ -57,16 +58,19 @@ class JwtAuthManager {
 		const tokenTable = currentGuardData.tokenTable;
 
 		if (tokenTable) {
-			const statement = sql.raw(`
+
+			const permissions = JSON.stringify(payload.permissions ?? [])
+
+			const statement = sql`
 				  INSERT INTO ${tokenTable} (user_id, name, token, permissions, expires_at)
 				  VALUES (
-					${payload.user.id},
-					${payload?.name},
+					'${payload.user.id}',
+					'${payload?.name}',
 					'${token}',
-					'${JSON.stringify(payload.permissions ?? [])}',
-					${expiresAtInSeconds}
+					'${ permissions }',
+					'${ expiresAtInSeconds }'
 				  )
-				`);
+				`;
 
 
 			await DB().run(statement);
@@ -78,7 +82,6 @@ class JwtAuthManager {
 
 		return token;
 	}
-
 
 	public async delete(deleteAll = false) {
 		const payload: ApiTokenPayload | null =
@@ -97,27 +100,25 @@ class JwtAuthManager {
 			const tokenTable = currentGuardData.tokenTable;
 
 			if (tokenTable && !deleteAll) {
-				const statement = sql.raw(
-					`DELETE FROM ${tokenTable} WHERE token = ${token}`,
-				);
+				const statement = sql`DELETE FROM ${tokenTable} WHERE token = ${token}`;
 
 				await DB().run(statement);
 			}
 
 			if (tokenTable && deleteAll) {
-				const statement = sql.raw(
-					`SELECT * FROM ${tokenTable} WHERE token = ${token}`,
-				);
+				const statement = sql`SELECT * FROM ${tokenTable} WHERE token = ${token}`;
 
 				const tokenData = await DB().get(statement);
 
 				if (tokenData) {
-					const statement = sql.raw(
-						`DELETE FROM ${tokenTable} WHERE user_id = ${tokenData.user_id}`,
-					);
+					const statement = sql`DELETE FROM ${tokenTable} WHERE user_id = ${tokenData.user_id}`;
 
 					await DB().run(statement);
 				}
+			}
+
+			if (currentGuardData.useCookie.status) {
+				Cookie.delete(currentGuardData.useCookie.key);
 			}
 		}
 	}
@@ -127,8 +128,11 @@ class JwtAuthManager {
 	}
 
 	public async user(guard?: string): Promise<AuthenticatedUser | null> {
-		let currentGuard = guard ?? "api";
 
+		let currentGuard = guard ?? App.config.auth.defaultApiGuard;
+
+		return currentGuard
+		// return currentGuard;
 		const currentGuardData = this.getCurrentGuardData(currentGuard);
 
 		if (App.getCurrentState("authUser")) {
@@ -146,7 +150,7 @@ class JwtAuthManager {
 			await this.setUser(payload, currentGuardData, currentGuard);
 		}
 
-		return App.getCurrentState("authUser");
+		return App.getCurrentState("authUser"+"_" + currentGuardData);
 	}
 
 	private async getToken(guard?: string) {
@@ -174,8 +178,7 @@ class JwtAuthManager {
 	}
 
 	private getCurrentGuardData(guard?: string): JwtGuardConfig {
-		const payload: ApiTokenPayload | null =
-			Request.getContext().get("jwtPayload");
+		const payload: ApiTokenPayload | null = Request.getContext().get("jwtPayload");
 
 		const finalGuard = payload?.guard ?? guard ?? "api";
 
@@ -192,14 +195,14 @@ class JwtAuthManager {
 		data: ApiTokenPayload,
 		guardData: JwtGuardConfig,
 	): Promise<AuthenticatedUser> {
+
 		const RolePermissionTable = guardData?.rolePermissionTable;
 
 		let rolePermissionData: RolePermission[] = [];
 
 		if (RolePermissionTable) {
-			const statement = sql.raw(
-				`SELECT * FROM ${RolePermissionTable} WHERE user_id = ${data.user.id}`,
-			);
+
+			const statement = sql`SELECT * FROM ${RolePermissionTable} WHERE user_id = ${data.user.id}`;
 
 			const rolePermissions: { [x: string]: string }[] =
 				await DB().all(statement);
@@ -274,9 +277,7 @@ class JwtAuthManager {
 		const userTable = guardData.userTable;
 
 		if (userTable) {
-			const statement = sql.raw(
-				`SELECT * FROM ${userTable} WHERE id = ${data.user.id}`,
-			);
+			const statement = sql`SELECT * FROM ${userTable} WHERE id = ${data.user.id}`;
 
 			const userFromDatabase: { [key: string]: any } | undefined =
 				await DB().get(statement);
@@ -306,9 +307,7 @@ class JwtAuthManager {
 		if (guardData.tokenTable) {
 			const AuthToken = await this.getToken(currentGuard ?? "api");
 
-			const statement = sql.raw(
-				`SELECT * FROM ${guardData.tokenTable} WHERE token = ${AuthToken}`,
-			);
+			const statement = sql`SELECT * FROM ${guardData.tokenTable} WHERE token = ${AuthToken}`
 
 			const token = await DB().get(statement);
 
@@ -323,8 +322,12 @@ class JwtAuthManager {
 
 		App.addToCurrentState("authUser", userData);
 	}
+
 }
 
-const JwtAuth: JwtAuthManager = new JwtAuthManager();
 
-export default JwtAuth;
+export const resolveJwtAuth = (): JwtAuthManager => {
+	return  App.getContainer().resolve('JwtAuth', ()=>{
+		return new JwtAuthManager();
+	})
+};

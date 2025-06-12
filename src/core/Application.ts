@@ -1,4 +1,4 @@
-import { type Context, Hono, Next } from "hono";
+import { Context, Hono, Next } from "hono";
 import { Request as CustomRequest } from "../core";
 import { JwtAuth, SessionAuth } from "../middlewares";
 import { Route } from "../route";
@@ -11,12 +11,15 @@ import {
 } from "../type-declaration";
 import { setRequest } from "./request";
 import { setEnv } from "./request";
+import {Container} from "./container";
 
 const middlewareInstances = new Map<MiddlewareClass, MiddlewareInstance>();
 
 class Application {
 	public readonly hono: Hono;
 	public config!: Config;
+	public context!: Context;
+	public container!: Container;
 
 	private currentStates: {
 		authUser?: AuthenticatedUser | null;
@@ -63,6 +66,16 @@ class Application {
 		this.config = config;
 	}
 
+	getContext(): Context
+	{
+		return this.context;
+	}
+
+	getContainer(): Container
+	{
+		return this.container;
+	}
+
 	addToCurrentState(key: string, value: unknown) {
 		this.currentStates[key] = value;
 	}
@@ -71,11 +84,19 @@ class Application {
 		return this.currentStates[key] ?? "";
 	}
 
+
+
 	public basicInit() {
+
 		this.currentStates = {};
+
 
 		this.hono.use("*", async (context: Context, next: Next) => {
 			CustomRequest.setContext(context);
+
+			this.container = new Container();
+
+	 		this.context = context;
 
 			this.currentStates = {};
 

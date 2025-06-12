@@ -103,6 +103,7 @@ class RequestData {
 	}
 }
 
+
 export let Request: RequestData;
 
 export function setEnv(env: Record<string, unknown>) {
@@ -112,6 +113,7 @@ export function setEnv(env: Record<string, unknown>) {
 export function getEnv(key: string, defaultValue: unknown = ""): any {
 	return environmentVars[key] ?? defaultValue;
 }
+
 
 export function setRequest(request: Request) {
 	Request = new RequestData(request);

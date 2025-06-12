@@ -3,7 +3,7 @@ import { Google } from "./social-auth/Google";
 import { Linkedin } from "./social-auth/Linkedin";
 import { Twitter } from "./social-auth/Twitter";
 
-const SocialAuth = {
+export const SocialAuth = {
 	google() {
 		return new Google();
 	},
@@ -21,4 +21,4 @@ const SocialAuth = {
 	},
 };
 
-export default SocialAuth;
+

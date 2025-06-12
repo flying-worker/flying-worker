@@ -1,7 +1,28 @@
 import { type AuthConfig } from "../src/type-declaration";
 
+
+// WebAuth.user()
+// WebAuth.guard('').user()
+// WebAuth.user('guard')
+// WebAuth.guard('guard').login(...)
+// WebAuth.check()
+// WebAuth.guard().check()
+
+
+
+// ApiAuth.user()
+// ApiAuth.guard('').user()
+// ApiAuth.user('guard')
+// ApiAuth.attempt()
+
+
+
 export const authConfig: AuthConfig = {
-	defaultGuard: "web",
+
+	defaultWebGuard: "web",
+
+	defaultApiGuard: "pro",
+
 	guards: {
 		web: {
 			driver: "session",
@@ -15,7 +36,7 @@ export const authConfig: AuthConfig = {
 				maxAge: "2d", // number as second and 1s, 2m,3h, 4d
 				key: "authorization-token",
 			},
-			userTable: "users",
+			userTable: 'users',
 			rolePermissionTable: "role_permissions",
 			tokenTable: "user_access_token",
 		},
