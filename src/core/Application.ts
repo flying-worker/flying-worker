@@ -162,7 +162,9 @@ class Application {
 	}
 
 	private async initiateHonoRoute() {
+
 		await this.config.app.webRoute();
+
 		this.applyRoutes();
 
 		Route.reset();

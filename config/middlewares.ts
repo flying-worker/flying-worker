@@ -17,7 +17,9 @@ import { MiddlewaresConfig } from "../src/type-declaration";
  * u can get csrf token with csrf() import {csrf} from 'flying-worker/supports
  */
 export const middlewaresConfig: MiddlewaresConfig = {
-	global: [MaintenanceMode],
+	global: [
+		MaintenanceMode
+	],
 	/**
 	 * middleware for web routes except 'api/*' routes
 	 */

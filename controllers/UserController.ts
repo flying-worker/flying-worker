@@ -1,5 +1,5 @@
 import { Context } from "hono";
-import ApiAuth from "../src/auth/ApiAuth"
+import {ApiAuth} from "../src/auth"
 import MainEventListener from "../Listener/MainEventListener"
 import {Str} from "../src/supports";
 import {getEnv} from "../src/core";
