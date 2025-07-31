@@ -131,9 +131,22 @@ export  class JwtAuthManager {
 
 		let currentGuard = guard ?? App.config.auth.defaultApiGuard;
 
-		return currentGuard
-		// return currentGuard;
-		const currentGuardData = this.getCurrentGuardData(currentGuard);
+		const payload: ApiTokenPayload | null = Request.getContext().get("jwtPayload");
+
+		if(!payload?.guard){
+			return null;
+		}
+
+		if(payload?.guard !== currentGuard){
+			return null;
+		}
+
+	    JwtGuardConfigSchema.parse(App.config.auth.guards[currentGuard]);
+
+		const currentGuardData = App.config.auth.guards[currentGuard] as JwtGuardConfig;
+
+		await this.setUser(payload, currentGuardData, currentGuard);
+
 
 		if (App.getCurrentState("authUser")) {
 			return App.getCurrentState("authUser");

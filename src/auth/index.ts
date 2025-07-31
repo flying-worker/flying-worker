@@ -28,7 +28,7 @@ const ApiAuth = {
         return resolveJwtAuth().delete();
     },
     user:   (...args: Parameters<JwtAuthManager['user']>)=> {
-        return resolveJwtAuth().user();
+        return resolveJwtAuth().user(...args);
     },
     check: (...args: Parameters<JwtAuthManager['check']>)=> {
         return resolveJwtAuth().check(...args);
