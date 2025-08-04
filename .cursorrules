@@ -1,0 +1,136 @@
+# Flying Worker Framework - Laravel-like Framework for Cloudflare Workers
+
+## Project Overview
+This is a Laravel-inspired web application framework built specifically for Cloudflare Workers, using Hono as the core web framework and React Router for frontend routing.
+
+## Architecture & Patterns
+
+### Core Framework Structure
+- **Application Core**: `src/core/Application.ts` - Main application class (similar to Laravel's Application)
+- **Routing**: `src/route/` - Route definitions and handling (like Laravel's routes)
+- **Middlewares**: `src/middlewares/` - HTTP middleware pipeline
+- **Controllers**: `controllers/` - Request handlers (Laravel-style controllers)
+- **Authentication**: `src/auth/` - Authentication system with JWT and session support
+- **Database**: `src/database/` - Database abstraction layer
+- **Events**: `src/event/` - Event system for decoupled communication
+- **Queue**: `src/queue/` - Background job processing
+- **Session**: `src/session/` - Session management
+- **KV Storage**: `src/kv/` - Cloudflare KV store abstraction
+
+### Frontend Structure
+- **React Components**: `resources/react/` - React components and pages
+- **Layouts**: `resources/react/layouts/` - Layout components
+- **Themes**: `resources/react/themes/` - UI themes and components
+- **Routes**: `resources/react/routes.ts` - Frontend route definitions
+
+### Configuration
+- **Config Files**: `config/` - Application configuration (like Laravel's config)
+- **Routes**: `routes/` - Route definitions (web.ts, api.ts)
+
+## Code Patterns & Conventions
+
+### Framework Patterns
+- Follow Laravel naming conventions and patterns
+- Use dependency injection through the Container system
+- Implement middleware pipeline pattern
+- Use event-driven architecture for loose coupling
+- Follow MVC pattern for request handling
+
+### TypeScript Patterns
+- Use strict TypeScript configuration
+- Define proper interfaces in `src/type-declaration/`
+- Use generic types for framework components
+- Implement proper error handling with custom exceptions
+
+### Cloudflare Workers Specific
+- Use Hono for HTTP request handling
+- Implement Workers-specific optimizations
+- Use Cloudflare KV for caching and storage
+- Handle environment bindings properly
+
+## File Organization Rules
+
+### Include These Directories
+- `src/` - Main framework source code
+- `controllers/` - Application controllers
+- `config/` - Application configuration
+- `routes/` - Route definitions
+- `resources/react/` - Frontend React code
+- `middlewares/` - Custom middleware
+- `database/` - Database models and schema
+- `events/` - Event listeners
+- `Listener/` - Event listener classes
+
+### Exclude These Directories
+- `package/` - Internal package build (avoid this completely)
+- `dist/` - Build output
+- `node_modules/` - Dependencies
+- `.react-router/` - Generated files
+- `migrations/` - Database migrations (auto-generated)
+
+## Development Guidelines
+
+### When Adding New Features
+1. Follow Laravel's conventions and naming
+2. Create proper TypeScript interfaces
+3. Add appropriate middleware if needed
+4. Implement proper error handling
+5. Add events for extensibility
+6. Consider Cloudflare Workers limitations
+
+### Code Style
+- Use Biome for formatting and linting
+- Follow the existing import patterns
+- Use proper JSDoc comments for public APIs
+- Implement proper validation using Zod schemas
+
+### Testing Patterns
+- Write tests in `test/` directory
+- Test both framework components and application logic
+- Mock Cloudflare Workers environment when needed
+
+## Key Framework Components
+
+### Application Class
+The main Application class boots the framework, handles configuration, and manages the request lifecycle.
+
+### Route System
+Similar to Laravel's routing, with support for:
+- Web routes (traditional page routes)
+- API routes (JSON API endpoints)
+- React Router integration for SPA behavior
+
+### Middleware System
+Pipeline-based middleware system supporting:
+- Authentication (JWT, Session)
+- CORS handling
+- CSRF protection
+- Custom middleware
+
+### Authentication
+Multi-layered auth system:
+- API authentication (JWT-based)
+- Session authentication (traditional web)
+- Social authentication providers
+
+### Database Layer
+Abstraction over Cloudflare D1 with:
+- Model definitions
+- Query building
+- Migrations
+- Relationships
+
+## Context Awareness
+- This is NOT a traditional Node.js application
+- Runs in Cloudflare Workers environment
+- Uses edge computing principles
+- Has specific performance and memory constraints
+- Integrates deeply with Cloudflare services (KV, D1, etc.)
+
+## When Suggesting Code Changes
+1. Maintain Laravel-like patterns and conventions
+2. Consider Cloudflare Workers environment limitations
+3. Use existing framework utilities and abstractions
+4. Follow the established TypeScript patterns
+5. Ensure compatibility with Hono and React Router
+6. Focus on performance and edge optimization
