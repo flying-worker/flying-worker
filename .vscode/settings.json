@@ -1,0 +1,173 @@
+{
+  // Flying Worker Framework Settings
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  
+  // File Exclusions (avoid package directory and build outputs)
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/package": true,
+    "**/.react-router": true,
+    "**/.wrangler": true,
+    "**/.cache": true,
+    "**/migrations": true,
+    "**/.DS_Store": true
+  },
+  
+  // Search Exclusions
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/package": true,
+    "**/.react-router": true,
+    "**/.wrangler": true,
+    "**/migrations": true,
+    "**/package-lock.json": true
+  },
+  
+  // File Watcher Exclusions
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/package/**": true,
+    "**/.react-router/**": true,
+    "**/.wrangler/**": true,
+    "**/.cache/**": true
+  },
+  
+  // Biome Configuration
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  
+  // Language Specific Settings
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  
+  // Framework Specific Settings
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+  
+  // File Associations
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.ts": "typescript",
+    "wrangler.jsonc": "jsonc"
+  },
+  
+  // IntelliSense Settings
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.paths": true,
+  "typescript.suggest.autoImports": true,
+  "typescript.suggest.completeFunctionCalls": true,
+  
+  // React Router & Hono Specific
+  "typescript.suggest.includeCompletionsForModuleExports": true,
+  "javascript.suggest.includeCompletionsForModuleExports": true,
+  
+  // Terminal Integration
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  
+  // Explorer Settings
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.js,${capture}.d.ts,${capture}.js.map",
+    "*.tsx": "${capture}.js,${capture}.d.ts,${capture}.js.map",
+    "package.json": "package-lock.json,yarn.lock,pnpm-lock.yaml,bun.lockb",
+    "tsconfig.json": "tsconfig.*.json",
+    "wrangler.jsonc": "wrangler.jsonc.example,wrangler.toml.example"
+  },
+  
+  // Framework Context
+  "files.defaultLanguage": "typescript",
+  "workbench.startupEditor": "readme",
+  
+  // Cloudflare Workers Specific
+  "json.schemas": [
+    {
+      "fileMatch": ["wrangler.jsonc", "wrangler.json"],
+      "url": "https://raw.githubusercontent.com/cloudflare/wrangler2/main/packages/wrangler/config-schema.json"
+    }
+  ],
+  
+  // Path Intellisense
+  "path-intellisense.mappings": {
+    "@": "${workspaceFolder}",
+    "@react": "${workspaceFolder}/resources/react"
+  },
+  
+  // Better Comments
+  "better-comments.tags": [
+    {
+      "tag": "!",
+      "color": "#FF2D00",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "?",
+      "color": "#3498DB",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "//",
+      "color": "#474747",
+      "strikethrough": true,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "todo",
+      "color": "#FF8C00",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "laravel",
+      "color": "#FF2D20",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": true,
+      "italic": false
+    }
+  ]
+}

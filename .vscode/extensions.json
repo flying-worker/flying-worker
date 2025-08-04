@@ -1,0 +1,48 @@
+{
+  "recommendations": [
+    // Core Development
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next",
+    
+    // React & Frontend
+    "es7-react-js-snippets",
+    "dsznajder.es7-react-js-snippets",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    
+    // Cloudflare Workers
+    "cloudflare.vscode-cf-workers",
+    
+    // Framework & Laravel-like Development
+    "ms-vscode.vscode-json",
+    "redhat.vscode-yaml",
+    "aaron-bond.better-comments",
+    "usernamehw.errorlens",
+    
+    // Git & Collaboration
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    
+    // Productivity
+    "streetsidesoftware.code-spell-checker",
+    "ms-vscode.vscode-todo-highlight",
+    "gruntfuggly.todo-tree",
+    
+    // API Development
+    "humao.rest-client",
+    "rangav.vscode-thunder-client",
+    
+    // Database (for D1/Drizzle)
+    "bradlc.vscode-tailwindcss",
+    
+    // Code Quality
+    "ms-vscode.vscode-eslint",
+    "bradlc.vscode-tailwindcss"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ]
+}
