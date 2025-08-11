@@ -19,14 +19,14 @@ const JwtTokenPayloadSchema = z
 		name: z.string().max(100).optional(),
 		user: AuthUserSchema,
 		permissions: z.array(z.string().max(50)).max(5).optional(),
-		maxAge: z.union([
-			z.number().nonnegative(),
-			z.string()
-				.regex(
-					/^\d+[smhd]$/,
-					"String must follow the format '1s', '2m', '3h', or '4d'",
-				),
-		]),
+		// maxAge: z.union([
+		// 	z.number().nonnegative(),
+		// 	z.string()
+		// 		.regex(
+		// 			/^\d+[smhd]$/,
+		// 			"String must follow the format '1s', '2m', '3h', or '4d'",
+		// 		),
+		// ]),
 	})
 	.catchall(z.unknown());
 

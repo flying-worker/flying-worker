@@ -14,6 +14,7 @@ import { Route } from "../src/route";
 
 Route.get("/", [UserController, "testWeb"], ["test"]);
 
+
 Route.group(
 	"/users",
 	() => {

@@ -51,7 +51,7 @@ export type ApiTokenPayload = {
 	user: AuthUser;
 	guard?: string;
 	permissions?: [string];
-	maxAge: number | string;
+	maxAge?: number | string;
 	[key: string]: unknown;
 };
 

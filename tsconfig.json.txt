@@ -1,0 +1,60 @@
+{
+	"include": [
+		"declarations.d.ts",
+		"worker-configuration.d.ts",
+		".react-router/types/**/*",
+		"src/**/*",
+		"controllers/**/*",
+		"config/**/*",
+		"routes/**/*",
+		"resources/**/*",
+		"middlewares/**/*",
+		"database/**/*",
+		"events/**/*",
+		"Listener/**/*",
+		"test/**/*"
+	],
+	"compilerOptions": {
+		"lib": ["DOM", "DOM.Iterable", "ES2022"],
+		"types": ["node", "vite/client"],
+		"target": "ES2022",
+		"module": "ES2022",
+		"moduleResolution": "bundler",
+		"declaration": true,
+		"outDir": "./dist",
+		"rootDir": "./",
+		"strict": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"jsx": "react-jsx",
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": false,
+		"rootDirs": [".", "./.react-router/types"],
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./*"],
+			"@react/*": ["./resources/react/*"],
+			"@config/*": ["./config/*"],
+			"@src/*": ["./src/*"],
+			"@controllers/*": ["./controllers/*"],
+			"@middlewares/*": ["./middlewares/*"],
+			"@database/*": ["./database/*"],
+			"@events/*": ["./events/*"],
+			"@listeners/*": ["./Listener/*"],
+			"@routes/*": ["./routes/*"],
+			"flying-worker": ["./src/index.ts"],
+			"flying-worker/*": ["./src/*"]
+		}
+	},
+	"exclude": [
+		"dist",
+		"package",
+		"node_modules",
+		".react-router",
+		".wrangler",
+		"migrations"
+	]
+}

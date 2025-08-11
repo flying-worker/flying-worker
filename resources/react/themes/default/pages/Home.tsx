@@ -21,7 +21,7 @@ export default function Welcome() {
                         <div className="flex lg:col-start-1">
                             <a href="https://github.com/emrancu/hono-remix-cloudflare-boilerplate"
                                target={'_blank'}>
-                                <img src="assets/github-mark.png" className={'w-[60px]'} alt=""/>
+                                <img src="al-aqsa.png" className={'w-[60px]'} alt=""/>
                             </a>
                         </div>
                         <nav className="-mx-3 flex flex-1 justify-end">
@@ -41,12 +41,7 @@ export default function Welcome() {
 
                         </nav>
                     </header>
-
-                    <main className="mt-6">
-                        <div>
-                          DOPLAC
-                        </div>
-                    </main>
+ 
 
                     <footer className="py-16 text-center text-sm text-black dark:text-white/70">
                         Made with ❤️ by <a href="https://x.com/ALEMRANCU" className={'text-blue-800'}>Al Emran</a>
