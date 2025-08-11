@@ -24,28 +24,33 @@ export  class JwtAuthManager {
 
 		const now = (Date.now() / 1e3) | 0; // Current Unix timestamp in seconds
 
-		let currentGuard = payload?.guard ?? "api";
+		let currentGuard = payload?.guard ?? App.config.auth.defaultApiGuard;
 
 		const currentGuardData = this.getCurrentGuardData(currentGuard);
 
 		let maxAge = payload.maxAge ?? currentGuardData.useCookie.maxAge;
 
-		let maxAgeInSeconds =
-			typeof maxAge === "string" ? parseLifetime(maxAge) : maxAge;
+		let maxAgeInSeconds = typeof maxAge === "string" ? parseLifetime(maxAge) : maxAge;
 
 		const expiresAtInSeconds = now + maxAgeInSeconds;
 
-		payload.expiresInDays = undefined;
-
 		if (currentGuardData.userTable) {
-			const statement = sql`select * from ${currentGuardData.userTable} where id =  ${payload.user.id}`;
-
+		
+			// Use sql.raw() ONLY for table name, keep user ID parameterized for security
+			const userTable = currentGuardData.userTable;
+			const userId = payload.user.id;
+			
+			const statement = sql`SELECT * FROM ${sql.raw(userTable)} WHERE id = ${userId}`;
+		 
 			const userFromDatabase: { [key: string]: any } | undefined = await DB().get(statement);
 
+		
 			if (!userFromDatabase?.id) {
 				throw new Error("User not found");
 			}
 		}
+
+
 
 		const finalPayload: JWTPayload = {
 			...payload,
@@ -53,6 +58,7 @@ export  class JwtAuthManager {
 			guard: currentGuard,
 		};
 
+				return finalPayload
 		const token = await sign(finalPayload, App.config.app.secret);
 
 		const tokenTable = currentGuardData.tokenTable;
@@ -147,7 +153,6 @@ export  class JwtAuthManager {
 
 		await this.setUser(payload, currentGuardData, currentGuard);
 
-
 		if (App.getCurrentState("authUser")) {
 			return App.getCurrentState("authUser");
 		}
@@ -196,8 +201,6 @@ export  class JwtAuthManager {
 		const finalGuard = payload?.guard ?? guard ?? "api";
 
 		if (finalGuard) {
-			JwtGuardConfigSchema.parse(App.config.auth.guards[finalGuard]);
-
 			return App.config.auth.guards[finalGuard] as JwtGuardConfig;
 		}
 

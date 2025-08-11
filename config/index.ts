@@ -14,7 +14,7 @@ const config: Config = {
 	app: appConfig,
 	session: sessionConfig,
 	auth: authConfig,
-	db: databaseConfig,
+	database: databaseConfig,
 	cors: corsConfig,
 	csrf: CsrfConfig,
 	middlewares: middlewaresConfig,

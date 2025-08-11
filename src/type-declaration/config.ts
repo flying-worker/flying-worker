@@ -162,7 +162,7 @@ type Config = {
 	app: AppConfig;
 	session: SessionConfig;
 	auth: AuthConfig;
-	db: DatabaseConfig;
+	database: DatabaseConfig;
 	cors: CorsConfig;
 	csrf: CsrfTokenConfig;
 	middlewares: MiddlewaresConfig;
