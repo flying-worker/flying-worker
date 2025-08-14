@@ -1,6 +1,6 @@
 import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { SessionAuth as Auth } from "../auth";
+import { WebAuth as Auth} from "../auth";
 import { App } from "../core";
 import BaseMiddleware from "../core/abstraction/BaseMiddleware";
 import { SessionGuardConfig } from "../type-declaration/config";
@@ -17,7 +17,7 @@ class SessionAuth extends BaseMiddleware {
 	}
 
 	public async boot(context: Context, next: Next) {
-		const currentGuard = this.guard ?? App.config.auth.defaultGuard;
+		const currentGuard = this.guard ?? App.config.auth.defaultWebGuard;
 
 		const jwtConfig = App.config.auth.guards[
 			currentGuard

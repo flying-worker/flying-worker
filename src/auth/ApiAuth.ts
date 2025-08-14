@@ -58,7 +58,7 @@ export  class JwtAuthManager {
 			guard: currentGuard,
 		};
 
-				return finalPayload
+//				return finalPayload
 		const token = await sign(finalPayload, App.config.app.secret);
 
 		const tokenTable = currentGuardData.tokenTable;
