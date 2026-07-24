@@ -1,0 +1,32 @@
+{
+  "name": "framework",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "cd dist/flying_worker && wrangler dev --config wrangler.json",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "wrangler d1 migrations apply flying-worker-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply flying-worker-db --remote",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@inertiajs/react": "^2.3.27",
+    "drizzle-orm": "^0.45.2",
+    "flying-worker": "*",
+    "hono": "^4.12.30",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.45.1",
+    "@cloudflare/workers-types": "^5.20260717.1",
+    "@types/node": "^24.13.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "drizzle-kit": "^0.31.10",
+    "vite": "^7.3.6",
+    "wrangler": "^4.112.0"
+  }
+}

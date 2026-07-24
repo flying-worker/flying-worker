@@ -1,0 +1,67 @@
+{
+  "name": "flying-worker",
+  "version": "0.1.0",
+  "description": "Laravel-inspired full-stack framework for Cloudflare Workers (Hono + Inertia + React + D1).",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./core": "./src/core/index.ts",
+    "./route": "./src/route/index.ts",
+    "./auth": "./src/auth/index.ts",
+    "./database": "./src/database/index.ts",
+    "./inertia": "./src/inertia/index.ts",
+    "./vite": "./src/inertia/vite-plugin.ts",
+    "./session": "./src/session/index.ts",
+    "./middlewares": "./src/middlewares/index.ts",
+    "./cookie": "./src/cookie/index.ts",
+    "./storage": "./src/storage/index.ts",
+    "./supports": "./src/supports/index.ts",
+    "./renderer": "./src/renderer.tsx",
+    "./type-declaration": "./src/type-declaration/index.ts",
+    "./type-declaration/storage": "./src/type-declaration/storage.ts",
+    "./zod-schema": "./src/zod-schema/index.ts"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "zod": "^3.25.76"
+  },
+  "peerDependencies": {
+    "@cloudflare/workers-types": ">=4",
+    "drizzle-orm": ">=0.45",
+    "hono": ">=4"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+      "./core": { "types": "./dist/core/index.d.ts", "import": "./dist/core/index.js" },
+      "./route": { "types": "./dist/route/index.d.ts", "import": "./dist/route/index.js" },
+      "./auth": { "types": "./dist/auth/index.d.ts", "import": "./dist/auth/index.js" },
+      "./database": { "types": "./dist/database/index.d.ts", "import": "./dist/database/index.js" },
+      "./inertia": { "types": "./dist/inertia/index.d.ts", "import": "./dist/inertia/index.js" },
+      "./vite": { "types": "./dist/vite-plugin.d.ts", "import": "./dist/vite-plugin.js" },
+      "./session": { "types": "./dist/session/index.d.ts", "import": "./dist/session/index.js" },
+      "./middlewares": { "types": "./dist/middlewares/index.d.ts", "import": "./dist/middlewares/index.js" },
+      "./cookie": { "types": "./dist/cookie/index.d.ts", "import": "./dist/cookie/index.js" },
+      "./storage": { "types": "./dist/storage/index.d.ts", "import": "./dist/storage/index.js" },
+      "./supports": { "types": "./dist/supports/index.d.ts", "import": "./dist/supports/index.js" },
+      "./renderer": { "types": "./dist/renderer.d.ts", "import": "./dist/renderer.js" },
+      "./type-declaration": { "types": "./dist/type-declaration/index.d.ts", "import": "./dist/type-declaration/index.js" },
+      "./type-declaration/storage": { "types": "./dist/type-declaration/storage.d.ts", "import": "./dist/type-declaration/storage.js" },
+      "./zod-schema": { "types": "./dist/zod-schema/index.d.ts", "import": "./dist/zod-schema/index.js" }
+    }
+  }
+}

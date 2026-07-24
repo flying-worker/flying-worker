@@ -1,120 +1,38 @@
 {
-	"name": "flying-worker",
-	"version": "0.0.1",
-	"description": "A application development framework for Cloudflare Worker",
-	"type": "module",
-	"exports": {
-		"./auth": {
-			"types": "./dist/auth/index.d.ts",
-			"import": "./dist/auth/index.js"
-		},
-		"./cookie": {
-			"types": "./dist/cookie/index.d.ts",
-			"import": "./dist/cookie/index.js",
-			"require": "./dist/cookie/index.cjs"
-		},
-		"./core": {
-			"types": "./dist/core/index.d.ts",
-			"import": "./dist/core/index.js"
-		},
-		"./database": {
-			"types": "./dist/database/index.d.ts",
-			"import": "./dist/database/index.js"
-		},
-		"./event": {
-			"types": "./dist/event/index.d.ts",
-			"import": "./dist/event/index.js"
-		},
-		"./kv": {
-			"types": "./dist/kv/index.d.ts",
-			"import": "./dist/kv/index.js"
-		},
-		"./middlewares": {
-			"types": "./dist/middlewares/index.d.ts",
-			"import": "./dist/middlewares/index.js"
-		},
-		"./queue": {
-			"types": "./dist/queue/index.d.ts",
-			"import": "./dist/queue/index.js"
-		},
-		"./route": {
-			"types": "./dist/route/index.d.ts",
-			"import": "./dist/route/index.js"
-		},
-		"./session": {
-			"types": "./dist/session/index.d.ts",
-			"import": "./dist/session/index.js"
-		},
-		"./supports": {
-			"types": "./dist/supports/index.d.ts",
-			"import": "./dist/supports/index.js"
-		},
-		"./types": {
-			"types": "./dist/type-declaration/index.d.ts",
-			"import": "./dist/type-declaration/index.js"
-		},
-		"./zod-schema": {
-			"types": "./dist/zod-schema/index.d.ts",
-			"import": "./dist/zod-schema/index.js"
-		}
-	},
-	"scripts": {
-		"test": "vitest",
-		"quality": "biome check .",
-		"quality:fix": "biome check . --write --unsafe",
-		"build": "react-router build",
-		"cf-typegen": "wrangler types",
-		"deploy": "npm run build && wrangler deploy",
-		"dev": "react-router dev",
-		"preview": "npm run build && vite preview",
-		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
-	},
-	"keywords": [
-		"worker",
-		"typescript",
-		"cloudflare worker",
-		"Hono",
-		"Remix"
-	],
-	"author": "",
-	"license": "MIT",
-	"resolutions": {
-		"sourcemap-codec": "@jridgewell/sourcemap-codec"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^1.9.4",
-		"@cloudflare/vite-plugin": "^1.6.0",
-		"@cloudflare/workers-types": "^4.20250410.0",
-		"@react-router/dev": "^7.5.0",
-		"@tailwindcss/vite": "^4.0.0",
-		"@types/node": "^20",
-		"@types/react": "^19.0.0",
-		"@types/react-dom": "^19.0.0",
-		"tailwindcss": "^4.0.0",
-		"tsup": "^8.3.6",
-		"typedoc": "^0.27.3",
-		"typedoc-plugin-mdn-links": "^4.0.3",
-		"typescript": "^5.7.2",
-		"vite": "^6.2.4",
-		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^3.1.1",
-		"wrangler": "4.10.0"
-	},
-	"dependencies": {
-		"@hono/oauth-providers": "^0.7.1",
-		"@react-router/cloudflare": "^7.5.0",
-		"@react-router/remix-routes-option-adapter": "^7.5.0",
-		"@vinejs/vine": "^3.0.1",
-		"bcryptjs": "^3.0.2",
-		"dotenv": "^16.4.7",
-		"drizzle-orm": "^0.40.1",
-		"hono": "^4.7.6",
-		"isbot": "^5.1.26",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"react-router": "^7.5.0",
-		"remix-hono": "^0.0.18",
-		"rimraf": "^5.0.10",
-		"zod": "^3.24.2"
-	}
+  "name": "flying-worker-monorepo",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "flying-worker",
+    "framework"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w framework",
+    "build": "npm run build -w framework",
+    "build:pkg": "npm run build -w flying-worker",
+    "preview": "npm run preview -w framework",
+    "db:generate": "npm run db:generate -w framework",
+    "db:migrate": "npm run db:migrate:remote -w framework",
+    "db:migrate:local": "npm run db:migrate -w framework",
+    "db:studio": "npm run db:studio -w framework",
+    "typecheck": "npm run typecheck -w flying-worker && npm run typecheck -w framework"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "@esbuild-kit/core-utils": {
+      "esbuild": "^0.25.12"
+    },
+    "tsup": {
+      "esbuild": "^0.25.12"
+    }
+  },
+  "allowScripts": {
+    "workerd@1.20260714.1": true,
+    "sharp@0.34.5": true,
+    "fsevents@2.3.3": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.1": true
+  }
 }
