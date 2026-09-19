@@ -81,6 +81,12 @@ describe("AppRequest.validate()", () => {
 			const credentials = await AppRequest.validate(loginSchema);
 			return c.json({ ok: true, credentials });
 		});
+
+		// Registered up front: Hono refuses new routes once its matcher is built.
+		App.hono.post("/search", async (c) => {
+			const query = await AppRequest.validate(z.object({ term: z.string().min(2) }));
+			return c.json(query);
+		});
 	});
 
 	const post = (body: unknown) =>
@@ -112,11 +118,6 @@ describe("AppRequest.validate()", () => {
 	});
 
 	it("validates query parameters alongside the body", async () => {
-		App.hono.post("/search", async (c) => {
-			const query = await AppRequest.validate(z.object({ term: z.string().min(2) }));
-			return c.json(query);
-		});
-
 		const res = await App.hono.request("/search?term=hono", { method: "POST" });
 
 		expect(await res.json()).toEqual({ term: "hono" });
