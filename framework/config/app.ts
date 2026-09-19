@@ -21,7 +21,7 @@ export const appConfig: AppConfig = {
 	apiPrefix: "api",
 
 	apiRoute: async () => {
-		// await import("../routes/api");
+		await import("../routes/api");
 	},
 	webRoute: async () => {
 		await import("../routes/web");
