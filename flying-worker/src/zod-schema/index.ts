@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { JwtGuardConfigSchema } from "./jwt-guard";
 
 const RolePermissionSchema = z.object({
 	id: z.number(),
@@ -30,4 +29,4 @@ const JwtTokenPayloadSchema = z
 	})
 	.catchall(z.unknown());
 
-export { JwtGuardConfigSchema, JwtTokenPayloadSchema };
+export { JwtTokenPayloadSchema };
