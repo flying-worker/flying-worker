@@ -93,6 +93,28 @@ class RouteManager {
 		this.add("delete", path, handler, middlewares);
 	}
 
+	public patch(
+		path: string,
+		handler: HandlerFunction | [any, string],
+		middlewares: string[] = [],
+	) {
+		this.add("patch", path, handler, middlewares);
+	}
+
+	/**
+	 * Note: there is deliberately no head(). Hono answers a HEAD request from
+	 * the matching GET route — headers intact, body stripped — and has no HEAD
+	 * shortcut of its own; `on('HEAD', ...)` does not register a route at all.
+	 * Register the GET and HEAD is handled.
+	 */
+	public options(
+		path: string,
+		handler: HandlerFunction | [any, string],
+		middlewares: string[] = [],
+	) {
+		this.add("options", path, handler, middlewares);
+	}
+
 	public reset() {
 		this.routes = [];
 	}
