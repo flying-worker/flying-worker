@@ -185,9 +185,12 @@ export class AuthManager {
 				.run();
 		}
 
-		// Set cookie if configured
+		// Set cookie if configured. Cookie.set is async — it awaits an HMAC via
+		// crypto.subtle before the Set-Cookie header is appended — so without the
+		// await a handler can return before the header lands and the auth cookie
+		// is dropped.
 		if (guardConfig.useCookie.status) {
-			Cookie.set(guardConfig.useCookie.key, token, maxAge);
+			await Cookie.set(guardConfig.useCookie.key, token, maxAge);
 		}
 
 		App.addToCurrentState("authUser", await this.formatUserData(user, guard));
