@@ -152,7 +152,10 @@ export async function inertiaRender(component: string, props: Record<string, any
   const page = {
     component,
     props: resolvedProps,
-    url: AppRequest.pathname(),
+    // Inertia's page.url must carry the query string: the client mirrors it
+    // into history, so pathname() alone rewrites /users?page=2 to /users and
+    // loses the state on back/forward and router.reload().
+    url: AppRequest.uri(),
     version,
   }
 
