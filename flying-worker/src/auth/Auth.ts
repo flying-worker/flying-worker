@@ -248,22 +248,22 @@ export class AuthManager {
 			}
 		}
 
-		try {
-			const result = await this.login(
-				{
-					id: user.id,
-					name: user.name,
-					email: user.email,
-					...user,
-				},
-				options,
-			);
+		// The credentials have been verified by this point, so anything login()
+		// throws is an infrastructure problem — a missing session middleware, a
+		// D1 outage, a schema mismatch. Returning false here reported all of
+		// them to the developer as "wrong password"; let them propagate.
+		const result = await this.login(
+			{
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				...user,
+			},
+			options,
+		);
 
-			// For JWT guards, return the token; for session guards, return true
-			return this.isJwtGuard(guard) ? (result as string) : true;
-		} catch (error: unknown) {
-			return false;
-		}
+		// For JWT guards, return the token; for session guards, return true
+		return this.isJwtGuard(guard) ? (result as string) : true;
 	}
 
 	/**
