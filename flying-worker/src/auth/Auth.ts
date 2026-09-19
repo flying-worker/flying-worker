@@ -212,7 +212,7 @@ export class AuthManager {
 		const userTable = guardConfig.userTable;
 		const cols = getTableColumns(userTable);
 		const conditions = [];
-		let password = "";
+		let password: string | undefined;
 
 		for (const [key, value] of Object.entries(credentials)) {
 			if (key === "password" || key === "pass") {
@@ -231,6 +231,13 @@ export class AuthManager {
 			return false;
 		}
 
+		// Require a password. An absent or empty one must not fall through to a
+		// match on the remaining columns alone: that would authenticate as any
+		// user whose email (or other identifying column) was submitted.
+		if (!password) {
+			return false;
+		}
+
 		const user = (await DB()
 			.select()
 			.from(userTable)
@@ -241,11 +248,15 @@ export class AuthManager {
 			return false;
 		}
 
-		if (password) {
-			const verify = await passwordVerify(password, user.password);
-			if (!verify) {
-				return false;
-			}
+		// A user row with no password (OAuth-only accounts, for example) can
+		// never be authenticated with credentials.
+		if (!user.password) {
+			return false;
+		}
+
+		const verify = await passwordVerify(password, user.password);
+		if (!verify) {
+			return false;
 		}
 
 		try {
