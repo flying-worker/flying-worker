@@ -32,14 +32,23 @@ type LoginOptions = {
 };
 
 export class AuthManager {
-	private guardsName: string | null = null;
+	private readonly guardsName: string | null;
+
+	constructor(guard: string | null = null) {
+		this.guardsName = guard;
+	}
 
 	/**
-	 * Set the guard to use for authentication
+	 * Get an Auth instance bound to the given guard.
+	 *
+	 * Returns a NEW instance rather than mutating the shared one. The manager
+	 * resolved by `resolveAuth()` is cached for the whole request, so assigning
+	 * the guard to `this` used to pin it: after `Auth.guard('api').login(user)`
+	 * every later `Auth.*` call in that request silently ran the JWT path
+	 * instead of the auto-detected web guard.
 	 */
-	public guard(guard: string): this {
-		this.guardsName = guard;
-		return this;
+	public guard(guard: string): AuthManager {
+		return new AuthManager(guard);
 	}
 
 	/**
