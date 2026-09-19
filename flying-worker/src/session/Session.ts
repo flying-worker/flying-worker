@@ -278,11 +278,39 @@ export class SessionStore {
 	}
 
 	/**
-	 * Regenerate session ID (useful for security)
+	 * Regenerate the session ID.
+	 *
+	 * Session data is carried over to the new ID. Pass `destroy = true` to also
+	 * delete the record held under the previous ID, so a session cookie captured
+	 * before the regeneration can no longer be replayed against the old record.
 	 */
-	regenerate(): void {
+	async regenerate(destroy = false): Promise<void> {
+		const previousId = this.sessionId;
+
 		this.sessionId = this.generateSessionId();
 		this.isDirty = true;
+
+		if (destroy && previousId && this.kvStore) {
+			try {
+				await this.kvStore.delete(`session:${previousId}`);
+			} catch (error) {
+				// A stale record left behind expires on its own TTL; failing the
+				// request over it would be worse than the leftover.
+				console.error("Error deleting previous session from KV:", error);
+			}
+		}
+	}
+
+	/**
+	 * Drop every value in the session and issue a new ID, deleting the record
+	 * held under the previous ID.
+	 *
+	 * `flush()` alone leaves the old record readable, and `regenerate()` alone
+	 * carries the data across to the new ID — invalidating needs both.
+	 */
+	async invalidate(): Promise<void> {
+		this.flush();
+		await this.regenerate(true);
 	}
 
 	/**

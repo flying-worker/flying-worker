@@ -30,8 +30,11 @@ export const Session = {
         return resolveSession().flash(...args);
     },
 
-    regenerate: () => {
-        return resolveSession().regenerate();
+    regenerate: (...args: Parameters<SessionStore['regenerate']>) => {
+        return resolveSession().regenerate(...args);
+    },
+    invalidate: () => {
+        return resolveSession().invalidate();
     },
     getId: () => {
         return resolveSession().getId();
