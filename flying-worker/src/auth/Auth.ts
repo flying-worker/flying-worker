@@ -283,6 +283,12 @@ export class AuthManager {
 	 * Session-based logout
 	 */
 	private async sessionLogout(): Promise<void> {
+		// Drop the auth entry BEFORE regenerating. regenerate() only swaps the
+		// session ID — the data object survives — so anything left behind here is
+		// written straight back under the new ID by the session middleware, and
+		// the user stays logged in across the "logout".
+		Session.forget(this.sessionKey());
+
 		await this.regenerateSession();
 		Cookie.delete("remember_login");
 		App.addToCurrentState("authUser", null);
@@ -456,11 +462,13 @@ export class AuthManager {
 	}
 
 	/**
-	 * Regenerate session
+	 * Regenerate the session ID, destroying the record held under the previous
+	 * ID. Used on login (session fixation) and on logout (so a cookie captured
+	 * beforehand cannot be replayed).
 	 */
 	private async regenerateSession(): Promise<void> {
 		if (Session.getId()) {
-			Session.regenerate();
+			await Session.regenerate(true);
 		}
 	}
 
