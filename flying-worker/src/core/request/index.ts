@@ -4,6 +4,18 @@ import App from "../Application";
 let environmentVars: Record<string, unknown> = {};
 
 /**
+ * Whether a FormData value is an uploaded file rather than a plain field.
+ * Duck-typed: `File` is not a global in every Workers-compatible runtime.
+ */
+function isUploadedFile(value: FormDataEntryValue): value is File {
+	return (
+		typeof value !== "string" &&
+		value !== null &&
+		typeof (value as File).arrayBuffer === "function"
+	);
+}
+
+/**
  * RequestData class handles HTTP request processing and data extraction.
  * Constructed from the Hono Context — the Context is the single source of truth
  * for the request. Raw Request is derived from context.req.raw.
@@ -12,6 +24,14 @@ class RequestData {
 	private readonly request: Request;
 	private readonly context: Context;
 	private requestData: Record<string, unknown> = {};
+	/**
+	 * Uploaded files from a multipart body, grouped by field name so that a
+	 * repeated field (`name="photos[]"`) keeps every file.
+	 *
+	 * Held apart from requestData so all() stays JSON-serialisable; reach them
+	 * with file() / files() / allFiles().
+	 */
+	private requestFiles: Record<string, File[]> = {};
 	private headers: Record<string, string> = {};
 	private baseUrl: string = "";
 	private path: string = "";
@@ -83,16 +103,18 @@ class RequestData {
 			) {
 				const formData = await this.request.formData();
 				const formDataObject: Record<string, string> = {};
-				
+
 				for (const [key, value] of formData.entries()) {
-					// Handle File objects and convert to string representation
-					if (typeof value === 'object' && value !== null && 'name' in value) {
-						formDataObject[key] = `[File: ${(value as any).name}]`;
+					if (isUploadedFile(value)) {
+						// Keep the File itself. It was previously flattened to the
+						// string `[File: name]`, which left no way to hand an upload
+						// to R2FileManager.upload().
+						(this.requestFiles[key] ??= []).push(value);
 					} else {
 						formDataObject[key] = value.toString();
 					}
 				}
-				
+
 				this.mergeBody(formDataObject);
 			}
 		} catch (error) {
@@ -155,10 +177,43 @@ class RequestData {
 
 
 	/**
-	 * Get all request data (query params + body data)
+	 * Get all request data (query params + body data).
+	 * Uploaded files are not included — see allFiles().
 	 */
 	all(): Record<string, unknown> { 
 		return this.requestData;
+	}
+
+	/**
+	 * The first uploaded file for a field, or null when none was sent.
+	 *
+	 * Requires `await initializeBody()` first, like input() and all(). The File
+	 * can be handed straight to `R2FileManager.upload()`.
+	 */
+	file(key: string): File | null {
+		return this.requestFiles[key]?.[0] ?? null;
+	}
+
+	/**
+	 * Every uploaded file for a field, for a repeated input such as
+	 * `<input type="file" name="photos[]" multiple>`. Empty when none was sent.
+	 */
+	files(key: string): File[] {
+		return [...(this.requestFiles[key] ?? [])];
+	}
+
+	/** Every uploaded file on the request, grouped by field name. */
+	allFiles(): Record<string, File[]> {
+		const result: Record<string, File[]> = {};
+		for (const [key, files] of Object.entries(this.requestFiles)) {
+			result[key] = [...files];
+		}
+		return result;
+	}
+
+	/** Whether the request carried at least one file for this field. */
+	hasFile(key: string): boolean {
+		return (this.requestFiles[key]?.length ?? 0) > 0;
 	}
 
 	/**
@@ -317,6 +372,10 @@ export const AppRequest = {
 	input:        (...args: Parameters<RequestData["input"]>)       => resolveRequest().input(...args),
 	get:          (...args: Parameters<RequestData["get"]>)         => resolveRequest().get(...args),
 	all:          ()                                                 => resolveRequest().all(),
+	file:         (...args: Parameters<RequestData["file"]>)        => resolveRequest().file(...args),
+	files:        (...args: Parameters<RequestData["files"]>)       => resolveRequest().files(...args),
+	allFiles:     ()                                                 => resolveRequest().allFiles(),
+	hasFile:      (...args: Parameters<RequestData["hasFile"]>)     => resolveRequest().hasFile(...args),
 	header:       (...args: Parameters<RequestData["header"]>)      => resolveRequest().header(...args),
 	allHeaders:   ()                                                 => resolveRequest().allHeaders(),
 	isMethod:     (...args: Parameters<RequestData["isMethod"]>)    => resolveRequest().isMethod(...args),
