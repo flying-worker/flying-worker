@@ -23,7 +23,8 @@
     "./renderer": "./src/renderer.tsx",
     "./type-declaration": "./src/type-declaration/index.ts",
     "./type-declaration/storage": "./src/type-declaration/storage.ts",
-    "./zod-schema": "./src/zod-schema/index.ts"
+    "./zod-schema": "./src/zod-schema/index.ts",
+    "./validation": "./src/validation/index.ts"
   },
   "scripts": {
     "build": "tsup",
@@ -61,7 +62,8 @@
       "./renderer": { "types": "./dist/renderer.d.ts", "import": "./dist/renderer.js" },
       "./type-declaration": { "types": "./dist/type-declaration/index.d.ts", "import": "./dist/type-declaration/index.js" },
       "./type-declaration/storage": { "types": "./dist/type-declaration/storage.d.ts", "import": "./dist/type-declaration/storage.js" },
-      "./zod-schema": { "types": "./dist/zod-schema/index.d.ts", "import": "./dist/zod-schema/index.js" }
+      "./zod-schema": { "types": "./dist/zod-schema/index.d.ts", "import": "./dist/zod-schema/index.js" },
+      "./validation": { "types": "./dist/validation/index.d.ts", "import": "./dist/validation/index.js" }
     }
   }
 }

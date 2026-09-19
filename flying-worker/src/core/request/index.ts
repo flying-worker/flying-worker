@@ -1,5 +1,7 @@
 import { Context } from "hono";
+import type { ZodType } from "zod";
 import App from "../Application";
+import { validateData } from "../../validation";
 
 let environmentVars: Record<string, unknown> = {};
 
@@ -139,6 +141,25 @@ class RequestData {
 	 */
 	all(): Record<string, unknown> { 
 		return this.requestData;
+	}
+
+	/**
+	 * Validate the request against a Zod schema.
+	 *
+	 * Reads the body first, so there is no separate initializeBody() call to
+	 * forget, then validates the query parameters and body together. Returns
+	 * the parsed value — the schema's output type, so coercions and defaults
+	 * are applied — or throws a ValidationException, which Hono renders as 422
+	 * with a `{ message, errors }` body.
+	 *
+	 *     const { email, password } = await AppRequest.validate(
+	 *       z.object({ email: z.string().email(), password: z.string().min(8) }),
+	 *     );
+	 */
+	async validate<T>(schema: ZodType<T>): Promise<T> {
+		await this.initializeBody();
+
+		return validateData(schema, this.all());
 	}
 
 	/**
@@ -297,6 +318,7 @@ export const AppRequest = {
 	input:        (...args: Parameters<RequestData["input"]>)       => resolveRequest().input(...args),
 	get:          (...args: Parameters<RequestData["get"]>)         => resolveRequest().get(...args),
 	all:          ()                                                 => resolveRequest().all(),
+	validate:     <T>(schema: ZodType<T>)                            => resolveRequest().validate(schema),
 	header:       (...args: Parameters<RequestData["header"]>)      => resolveRequest().header(...args),
 	allHeaders:   ()                                                 => resolveRequest().allHeaders(),
 	isMethod:     (...args: Parameters<RequestData["isMethod"]>)    => resolveRequest().isMethod(...args),
