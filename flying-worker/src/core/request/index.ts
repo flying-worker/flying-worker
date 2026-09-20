@@ -76,7 +76,7 @@ class RequestData {
 
 		try {
 			if (contentType.includes("application/json")) {
-				this.requestData = await this.request.json();
+				this.mergeBody(await this.request.json());
 			} else if (
 				contentType.includes("application/x-www-form-urlencoded") ||
 				contentType.includes("multipart/form-data")
@@ -93,12 +93,32 @@ class RequestData {
 					}
 				}
 				
-				this.requestData = formDataObject;
+				this.mergeBody(formDataObject);
 			}
 		} catch (error) {
+			// Keep whatever parseUrl() collected from the query string — a body we
+			// could not read is no reason to lose the query parameters too.
 			console.error("Failed to parse request body:", error);
-			this.requestData = {};
 		}
+	}
+
+	/**
+	 * Merge parsed body values over the data already collected from the URL.
+	 *
+	 * Assigning here instead of merging discarded every query parameter:
+	 * parseUrl() runs in the constructor and seeds requestData with the query
+	 * string, so `POST /search?page=2` with a JSON body lost `page` entirely.
+	 * Body values win on a key collision, matching Laravel's input precedence.
+	 *
+	 * A body that is not a JSON object — a top-level array or a bare primitive —
+	 * has no keys to merge and is left to `getRequest().json()`.
+	 */
+	private mergeBody(parsed: unknown): void {
+		if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+			return;
+		}
+
+		this.requestData = { ...this.requestData, ...(parsed as Record<string, unknown>) };
 	}
 
 	/**
