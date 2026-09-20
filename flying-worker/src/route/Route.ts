@@ -22,8 +22,17 @@ class RouteManager {
 
 		if (Array.isArray(handler)) {
 			const [ClassRef, methodName] = handler;
-			const instance = new ClassRef();
-			fn = instance[methodName].bind(instance);
+
+			// Construct per request, not once at registration time. Routes are
+			// registered when the module loads, so a single instance would be
+			// shared by every request in the isolate — and a controller that
+			// stores anything on `this`, which is the natural Laravel habit
+			// (`this.user = await Auth.user()`), would leak it across concurrent
+			// requests. Laravel resolves a fresh controller per request; so do we.
+			fn = (context) => {
+				const instance = new ClassRef();
+				return instance[methodName](context);
+			};
 		} else {
 			fn = handler;
 		}
