@@ -12,6 +12,12 @@ export interface SessionGuardConfig {
 	userTable: SQLiteTable;
 	/** The Drizzle table holding per-user roles/permissions. */
 	rolePermissionTable: SQLiteTable;
+	/**
+	 * Columns stripped from the authenticated user before it reaches app code
+	 * or an Inertia prop. Defaults to ["password", "remember_token"]; set it to
+	 * extend or replace that list (e.g. two-factor secrets, API keys).
+	 */
+	hidden?: string[];
 }
 
 interface UseCookie {
@@ -29,6 +35,12 @@ export interface JwtGuardConfig {
 	rolePermissionTable?: SQLiteTable;
 	/** The Drizzle table storing issued API tokens. */
 	tokenTable?: SQLiteTable;
+	/**
+	 * Columns stripped from the authenticated user before it reaches app code
+	 * or an Inertia prop. Defaults to ["password", "remember_token"]; set it to
+	 * extend or replace that list (e.g. two-factor secrets, API keys).
+	 */
+	hidden?: string[];
 }
 
 interface AuthConfig {

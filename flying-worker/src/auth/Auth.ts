@@ -32,6 +32,12 @@ type LoginOptions = {
 };
 
 export class AuthManager {
+	/**
+	 * Columns never exposed on the authenticated user. Override per guard with
+	 * `hidden` in the guard config.
+	 */
+	private static readonly HIDDEN_BY_DEFAULT = ["password", "remember_token"];
+
 	private readonly guardsName: string | null;
 
 	constructor(guard: string | null = null) {
@@ -534,13 +540,18 @@ export class AuthManager {
 			rolePermissions = user.rolePermissions;
 		}
 
-		// Remove sensitive data
-		if (user.password) {
-			user.password = undefined;
+		// Strip sensitive columns here, at the one choke point every guard goes
+		// through. attempt() and setSessionUser() spread the whole D1 row into
+		// the user object, so remember_token (and anything else secret on the
+		// table) otherwise reached App.currentState.authUser and went out to the
+		// browser through Inertia's shared `auth.user` prop.
+		const visibleUser = { ...user } as Record<string, unknown>;
+		for (const field of guardConfig.hidden ?? AuthManager.HIDDEN_BY_DEFAULT) {
+			delete visibleUser[field];
 		}
 
 		const formattedUser: AuthenticatedUser = {
-			...user,
+			...(visibleUser as AuthUser),
 			rolePermissions,
 			hasRole: this.hasRole,
 			hasPermission: this.hasPermission,
@@ -655,14 +666,8 @@ export class AuthManager {
 				});
 			}
 
-			if (userFromDatabase.password) {
-				userFromDatabase.password = undefined;
-			}
-
-			if (userFromDatabase.remember_token) {
-				userFromDatabase.remember_token = undefined;
-			}
-
+			// No ad-hoc stripping here: formatUserData() below removes the hidden
+			// columns for every guard, so the session and JWT paths cannot drift.
 			data.user = {
 				id: userFromDatabase.id,
 				name: userFromDatabase.name,
