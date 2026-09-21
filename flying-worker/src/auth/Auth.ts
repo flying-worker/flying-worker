@@ -16,7 +16,7 @@ import {
 	JWTPayload,
 	ApiTokenPayload,
 } from "../type-declaration";
-import { AuthUserSchema, JwtGuardConfigSchema } from "../zod-schema";
+import { AuthUserSchema } from "../zod-schema";
 
 
 type AuthData = {
