@@ -77,6 +77,19 @@ describe("AppRequest file accessors", () => {
 		expect(body.data).toEqual({ title: "My album" });
 	});
 
+	it("keeps query parameters alongside a multipart body", async () => {
+		// The point where file handling meets the query/body merge: the form
+		// branch must merge its fields over the query string, not replace it.
+		const res = await App.hono.request("/upload?page=2", {
+			method: "POST",
+			body: form(),
+		});
+		const body = (await res.json()) as any;
+
+		expect(body.data).toEqual({ page: "2", title: "My album" });
+		expect(body.avatarName).toBe("me.png");
+	});
+
 	it("reports nothing for a field that carried no file", async () => {
 		const body = (await (await post(form())).json()) as any;
 
