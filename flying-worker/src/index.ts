@@ -14,3 +14,4 @@ export * from "./cookie";
 export * from "./storage";
 export * from "./supports";
 export * from "./auth";
+export * from "./validation";

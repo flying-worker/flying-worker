@@ -25,6 +25,7 @@ export default defineConfig({
 		"src/type-declaration/index.ts",
 		"src/type-declaration/storage.ts",
 		"src/zod-schema/index.ts",
+		"src/validation/index.ts",
 	],
 	format: ["esm"],
 	dts: true,
