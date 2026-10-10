@@ -323,6 +323,21 @@ export const resolveR2FileManager = (): R2FileManager => {
 	});
 };
 
-// Export singleton instance
-export const FileManager = resolveR2FileManager();
+/** Resolve storage lazily inside the active request, just like Auth and AppRequest. */
+export const FileManager = {
+	upload: (...args: Parameters<R2FileManager["upload"]>) => resolveR2FileManager().upload(...args),
+	uploadBuffer: (...args: Parameters<R2FileManager["uploadBuffer"]>) => resolveR2FileManager().uploadBuffer(...args),
+	get: (...args: Parameters<R2FileManager["get"]>) => resolveR2FileManager().get(...args),
+	head: (...args: Parameters<R2FileManager["head"]>) => resolveR2FileManager().head(...args),
+	delete: (...args: Parameters<R2FileManager["delete"]>) => resolveR2FileManager().delete(...args),
+	deleteMultiple: (...args: Parameters<R2FileManager["deleteMultiple"]>) => resolveR2FileManager().deleteMultiple(...args),
+	list: (...args: Parameters<R2FileManager["list"]>) => resolveR2FileManager().list(...args),
+	exists: (...args: Parameters<R2FileManager["exists"]>) => resolveR2FileManager().exists(...args),
+	getPublicUrl: (...args: Parameters<R2FileManager["getPublicUrl"]>) => resolveR2FileManager().getPublicUrl(...args),
+	getApiCredentials: (...args: Parameters<R2FileManager["getApiCredentials"]>) => resolveR2FileManager().getApiCredentials(...args),
+	copy: (...args: Parameters<R2FileManager["copy"]>) => resolveR2FileManager().copy(...args),
+	move: (...args: Parameters<R2FileManager["move"]>) => resolveR2FileManager().move(...args),
+	getSize: (...args: Parameters<R2FileManager["getSize"]>) => resolveR2FileManager().getSize(...args),
+	updateMetadata: (...args: Parameters<R2FileManager["updateMetadata"]>) => resolveR2FileManager().updateMetadata(...args),
+};
 
