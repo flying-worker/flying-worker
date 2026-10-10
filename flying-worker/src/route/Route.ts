@@ -22,8 +22,17 @@ class RouteManager {
 
 		if (Array.isArray(handler)) {
 			const [ClassRef, methodName] = handler;
-			const instance = new ClassRef();
-			fn = instance[methodName].bind(instance);
+
+			// Construct per request, not once at registration time. Routes are
+			// registered when the module loads, so a single instance would be
+			// shared by every request in the isolate — and a controller that
+			// stores anything on `this`, which is the natural Laravel habit
+			// (`this.user = await Auth.user()`), would leak it across concurrent
+			// requests. Laravel resolves a fresh controller per request; so do we.
+			fn = (context) => {
+				const instance = new ClassRef();
+				return instance[methodName](context);
+			};
 		} else {
 			fn = handler;
 		}
@@ -91,6 +100,28 @@ class RouteManager {
 		middlewares: string[] = [],
 	) {
 		this.add("delete", path, handler, middlewares);
+	}
+
+	public patch(
+		path: string,
+		handler: HandlerFunction | [any, string],
+		middlewares: string[] = [],
+	) {
+		this.add("patch", path, handler, middlewares);
+	}
+
+	/**
+	 * Note: there is deliberately no head(). Hono answers a HEAD request from
+	 * the matching GET route — headers intact, body stripped — and has no HEAD
+	 * shortcut of its own; `on('HEAD', ...)` does not register a route at all.
+	 * Register the GET and HEAD is handled.
+	 */
+	public options(
+		path: string,
+		handler: HandlerFunction | [any, string],
+		middlewares: string[] = [],
+	) {
+		this.add("options", path, handler, middlewares);
 	}
 
 	public reset() {

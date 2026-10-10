@@ -1,5 +1,5 @@
 import { HTTPException } from "hono/http-exception";
-import type { ZodType } from "zod";
+import type { ZodType, ZodTypeDef } from "zod";
 
 /**
  * Field-keyed validation messages, e.g.
@@ -41,7 +41,7 @@ export class ValidationException extends HTTPException {
 export function toValidationErrors(
 	issues: readonly { path: PropertyKey[]; message: string }[],
 ): ValidationErrors {
-	const errors: ValidationErrors = {};
+	const errors: ValidationErrors = Object.create(null);
 
 	for (const issue of issues) {
 		const key = issue.path.map(String).join(".");
@@ -57,8 +57,22 @@ export function toValidationErrors(
  * Returns the parsed value — which is the schema's output type, so coercions
  * and defaults are applied — or throws a ValidationException.
  */
-export function validateData<T>(schema: ZodType<T>, data: unknown): T {
+export function validateData<T>(schema: ZodType<T, ZodTypeDef, unknown>, data: unknown): T {
 	const result = schema.safeParse(data);
+
+	if (!result.success) {
+		throw new ValidationException(toValidationErrors(result.error.issues));
+	}
+
+	return result.data;
+}
+
+/** Validate data with schemas that may contain async refinements or transforms. */
+export async function validateDataAsync<T>(
+	schema: ZodType<T, ZodTypeDef, unknown>,
+	data: unknown,
+): Promise<T> {
+	const result = await schema.safeParseAsync(data);
 
 	if (!result.success) {
 		throw new ValidationException(toValidationErrors(result.error.issues));

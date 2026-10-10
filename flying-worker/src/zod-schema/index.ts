@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { JwtGuardConfigSchema } from "./jwt-guard";
 
 const RolePermissionSchema = z.object({
 	id: z.number(),
@@ -11,7 +10,11 @@ export const AuthUserSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	email: z.string().email(),
-	rolePermissions: RolePermissionSchema.nullish(), // Optional or null
+	// An array: every consumer treats rolePermissions as a list — Auth assigns it
+	// to RolePermission[] and hasRole()/hasPermission() call .some() on it.
+	// Validating a single object here rejected the shape the framework itself
+	// produces, and inside attempt() that ZodError surfaced as "wrong password".
+	rolePermissions: z.array(RolePermissionSchema).nullish(), // Optional or null
 });
 
 const JwtTokenPayloadSchema = z
@@ -30,4 +33,4 @@ const JwtTokenPayloadSchema = z
 	})
 	.catchall(z.unknown());
 
-export { JwtGuardConfigSchema, JwtTokenPayloadSchema };
+export { JwtTokenPayloadSchema };

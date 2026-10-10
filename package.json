@@ -10,6 +10,7 @@
     "dev": "npm run dev -w framework",
     "build": "npm run build -w framework",
     "build:pkg": "npm run build -w flying-worker",
+    "test": "npm run test -w flying-worker",
     "preview": "npm run preview -w framework",
     "db:generate": "npm run db:generate -w framework",
     "db:migrate": "npm run db:migrate:remote -w framework",

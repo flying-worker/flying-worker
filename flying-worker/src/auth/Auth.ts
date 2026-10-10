@@ -16,7 +16,7 @@ import {
 	JWTPayload,
 	ApiTokenPayload,
 } from "../type-declaration";
-import { AuthUserSchema, JwtGuardConfigSchema } from "../zod-schema";
+import { AuthUserSchema } from "../zod-schema";
 
 
 type AuthData = {
@@ -32,14 +32,29 @@ type LoginOptions = {
 };
 
 export class AuthManager {
-	private guardsName: string | null = null;
+	/**
+	 * Columns never exposed on the authenticated user. Override per guard with
+	 * `hidden` in the guard config.
+	 */
+	private static readonly HIDDEN_BY_DEFAULT = ["password", "remember_token"];
+
+	private readonly guardsName: string | null;
+
+	constructor(guard: string | null = null) {
+		this.guardsName = guard;
+	}
 
 	/**
-	 * Set the guard to use for authentication
+	 * Get an Auth instance bound to the given guard.
+	 *
+	 * Returns a NEW instance rather than mutating the shared one. The manager
+	 * resolved by `resolveAuth()` is cached for the whole request, so assigning
+	 * the guard to `this` used to pin it: after `Auth.guard('api').login(user)`
+	 * every later `Auth.*` call in that request silently ran the JWT path
+	 * instead of the auto-detected web guard.
 	 */
-	public guard(guard: string): this {
-		this.guardsName = guard;
-		return this;
+	public guard(guard: string): AuthManager {
+		return new AuthManager(guard);
 	}
 
 	/**
@@ -185,9 +200,12 @@ export class AuthManager {
 				.run();
 		}
 
-		// Set cookie if configured
+		// Set cookie if configured. Cookie.set is async — it awaits an HMAC via
+		// crypto.subtle before the Set-Cookie header is appended — so without the
+		// await a handler can return before the header lands and the auth cookie
+		// is dropped.
 		if (guardConfig.useCookie.status) {
-			Cookie.set(guardConfig.useCookie.key, token, maxAge);
+			await Cookie.set(guardConfig.useCookie.key, token, maxAge);
 		}
 
 		App.addToCurrentState("authUser", await this.formatUserData(user, guard));
@@ -212,7 +230,7 @@ export class AuthManager {
 		const userTable = guardConfig.userTable;
 		const cols = getTableColumns(userTable);
 		const conditions = [];
-		let password = "";
+		let password: string | undefined;
 
 		for (const [key, value] of Object.entries(credentials)) {
 			if (key === "password" || key === "pass") {
@@ -231,6 +249,13 @@ export class AuthManager {
 			return false;
 		}
 
+		// Require a password. An absent or empty one must not fall through to a
+		// match on the remaining columns alone: that would authenticate as any
+		// user whose email (or other identifying column) was submitted.
+		if (!password) {
+			return false;
+		}
+
 		const user = (await DB()
 			.select()
 			.from(userTable)
@@ -241,29 +266,33 @@ export class AuthManager {
 			return false;
 		}
 
-		if (password) {
-			const verify = await passwordVerify(password, user.password);
-			if (!verify) {
-				return false;
-			}
-		}
-
-		try {
-			const result = await this.login(
-				{
-					id: user.id,
-					name: user.name,
-					email: user.email,
-					...user,
-				},
-				options,
-			);
-
-			// For JWT guards, return the token; for session guards, return true
-			return this.isJwtGuard(guard) ? (result as string) : true;
-		} catch (error: unknown) {
+		// A user row with no password (OAuth-only accounts, for example) can
+		// never be authenticated with credentials.
+		if (!user.password) {
 			return false;
 		}
+
+		const verify = await passwordVerify(password, user.password);
+		if (!verify) {
+			return false;
+		}
+
+		// The credentials have been verified by this point, so anything login()
+		// throws is an infrastructure problem — a missing session middleware, a
+		// D1 outage, a schema mismatch. Returning false here reported all of
+		// them to the developer as "wrong password"; let them propagate.
+		const result = await this.login(
+			{
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				...user,
+			},
+			options,
+		);
+
+		// For JWT guards, return the token; for session guards, return true
+		return this.isJwtGuard(guard) ? (result as string) : true;
 	}
 
 	/**
@@ -283,6 +312,12 @@ export class AuthManager {
 	 * Session-based logout
 	 */
 	private async sessionLogout(): Promise<void> {
+		// Drop the auth entry BEFORE regenerating. regenerate() only swaps the
+		// session ID — the data object survives — so anything left behind here is
+		// written straight back under the new ID by the session middleware, and
+		// the user stays logged in across the "logout".
+		Session.forget(this.sessionKey());
+
 		await this.regenerateSession();
 		Cookie.delete("remember_login");
 		App.addToCurrentState("authUser", null);
@@ -456,11 +491,13 @@ export class AuthManager {
 	}
 
 	/**
-	 * Regenerate session
+	 * Regenerate the session ID, destroying the record held under the previous
+	 * ID. Used on login (session fixation) and on logout (so a cookie captured
+	 * beforehand cannot be replayed).
 	 */
 	private async regenerateSession(): Promise<void> {
 		if (Session.getId()) {
-			Session.regenerate();
+			await Session.regenerate(true);
 		}
 	}
 
@@ -503,13 +540,18 @@ export class AuthManager {
 			rolePermissions = user.rolePermissions;
 		}
 
-		// Remove sensitive data
-		if (user.password) {
-			user.password = undefined;
+		// Strip sensitive columns here, at the one choke point every guard goes
+		// through. attempt() and setSessionUser() spread the whole D1 row into
+		// the user object, so remember_token (and anything else secret on the
+		// table) otherwise reached App.currentState.authUser and went out to the
+		// browser through Inertia's shared `auth.user` prop.
+		const visibleUser = { ...user } as Record<string, unknown>;
+		for (const field of guardConfig.hidden ?? AuthManager.HIDDEN_BY_DEFAULT) {
+			delete visibleUser[field];
 		}
 
 		const formattedUser: AuthenticatedUser = {
-			...user,
+			...(visibleUser as AuthUser),
 			rolePermissions,
 			hasRole: this.hasRole,
 			hasPermission: this.hasPermission,
@@ -624,14 +666,8 @@ export class AuthManager {
 				});
 			}
 
-			if (userFromDatabase.password) {
-				userFromDatabase.password = undefined;
-			}
-
-			if (userFromDatabase.remember_token) {
-				userFromDatabase.remember_token = undefined;
-			}
-
+			// No ad-hoc stripping here: formatUserData() below removes the hidden
+			// columns for every guard, so the session and JWT paths cannot drift.
 			data.user = {
 				id: userFromDatabase.id,
 				name: userFromDatabase.name,

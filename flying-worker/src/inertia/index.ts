@@ -2,6 +2,7 @@
 import { type Context } from 'hono'
 import viteManifest from 'virtual:flying-worker/manifest'
 import { App, AppRequest } from '../core'
+import { resolveProps } from './resolve-props'
 
 // Detect development mode more reliably
 const DEV = typeof globalThis !== 'undefined' &&
@@ -91,28 +92,6 @@ function getAssetVersion(): string {
   }
 }
 
-/** Resolve lazy props: call any function values (including async), recurse into nested objects */
-async function resolveProps(
-  props: Record<string, unknown>,
-  only?: string[] | null,
-): Promise<Record<string, unknown>> {
-  const result: Record<string, unknown> = {}
-  const entries = only
-    ? Object.entries(props).filter(([key]) => only.includes(key))
-    : Object.entries(props)
-
-  for (const [key, value] of entries) {
-    if (typeof value === 'function') {
-      result[key] = await value()
-    } else if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-      result[key] = await resolveProps(value as Record<string, unknown>)
-    } else {
-      result[key] = value
-    }
-  }
-  return result
-}
-
 // --- Inertia helpers ---
 function isInertia(c: Context): boolean {
   return c.req.header('X-Inertia') === 'true'
@@ -152,7 +131,10 @@ export async function inertiaRender(component: string, props: Record<string, any
   const page = {
     component,
     props: resolvedProps,
-    url: AppRequest.pathname(),
+    // Inertia's page.url must carry the query string: the client mirrors it
+    // into history, so pathname() alone rewrites /users?page=2 to /users and
+    // loses the state on back/forward and router.reload().
+    url: AppRequest.uri(),
     version,
   }
 

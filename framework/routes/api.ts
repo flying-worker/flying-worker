@@ -9,8 +9,14 @@
  * - GET `/api/set-session` -> Calls the `SessionSet` function
  */
 
-// import { UserController } from "../controllers/UserController";
-// import { Route } from "flying-worker/route";
+import { Route } from "flying-worker/route";
+import { AuthController } from "../app/controllers/AuthController";
+
+Route.post("/login", [AuthController, "login"]);
+Route.get("/user", [AuthController, "user"]);
+Route.post("/logout", [AuthController, "logout"]);
+
+// import { UserController } from "../app/controllers/UserController";
 
 // Route.get("/", [UserController, "testWeb"], ["test"]);
 

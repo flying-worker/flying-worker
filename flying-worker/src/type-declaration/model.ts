@@ -25,7 +25,7 @@ export type AuthUser = {
 	id: number;
 	name: string;
 	email: string;
-	rolePermissions?: [RolePermission] | [];
+	rolePermissions?: RolePermission[];
 	[key: string]: unknown;
 };
 
@@ -33,16 +33,16 @@ export type AuthenticatedUser = {
 	id: number;
 	name: string;
 	email: string;
-	hasRole: (role: string | [string]) => boolean;
-	hasPermission: (permission: string | [string]) => boolean;
-	hasTokenPermission?: (permission: string | [string]) => boolean;
-	rolePermissions?: RolePermission[] | [];
+	hasRole: (role: string | string[]) => boolean;
+	hasPermission: (permission: string | string[]) => boolean;
+	hasTokenPermission?: (permission: string | string[]) => boolean;
+	rolePermissions?: RolePermission[];
 	[key: string]: unknown;
 };
 
 export type TokenData = {
 	name?: string;
-	abilities?: [string];
+	abilities?: string[];
 	maxAge?: number | string;
 };
 
@@ -50,13 +50,13 @@ export type ApiTokenPayload = {
 	name?: string;
 	user: AuthUser;
 	guard?: string;
-	permissions?: [string];
+	permissions?: string[];
 	maxAge?: number | string;
 	[key: string]: unknown;
 };
 
 export type JwtTokenPayload = {
 	user: AuthUser;
-	abilities?: [string];
+	abilities?: string[];
 	exp?: number;
 };

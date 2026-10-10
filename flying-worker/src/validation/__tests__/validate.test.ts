@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, expectTypeOf, beforeEach } from "vitest";
 import { Hono } from "hono";
 import { z } from "zod";
 import App from "../../core/Application";
 import { AppRequest } from "../../core/request";
-import { ValidationException, toValidationErrors, validateData } from "../index";
+import { ValidationException, toValidationErrors, validateData, validateDataAsync } from "../index";
 import { makeConfig } from "../../core/__tests__/helpers";
 
 /**
@@ -17,6 +17,21 @@ const loginSchema = z.object({
 });
 
 describe("validateData()", () => {
+	it("accepts transforms with different input and output types", () => {
+		const parsed = validateData(z.string().transform((value) => value.length), "hello");
+		expectTypeOf(parsed).toEqualTypeOf<number>();
+		expect(parsed).toBe(5);
+	});
+
+	it("validates async refinements and transforms", async () => {
+		const schema = z.string().refine(async (value) => value === "hello", "Rejected")
+			.transform(async (value) => value.length);
+		const parsed = await validateDataAsync(schema, "hello");
+		expectTypeOf(parsed).toEqualTypeOf<number>();
+		expect(parsed).toBe(5);
+		await expect(validateDataAsync(schema, "no")).rejects.toBeInstanceOf(ValidationException);
+	});
+
 	it("returns the parsed value on success", () => {
 		const parsed = validateData(loginSchema, {
 			email: "ada@example.com",
@@ -47,6 +62,20 @@ describe("validateData()", () => {
 });
 
 describe("toValidationErrors()", () => {
+	it("safely groups fields that match Object prototype properties", async () => {
+		const keys = ["__proto__", "constructor", "toString", "hasOwnProperty"];
+		const errors = toValidationErrors(keys.flatMap((key) => [
+			{ path: [key], message: "Required" },
+			{ path: [key], message: "Invalid" },
+		]));
+		for (const key of keys) {
+			expect(Object.hasOwn(errors, key)).toBe(true);
+			expect(errors[key]).toEqual(["Required", "Invalid"]);
+		}
+		const body = await new ValidationException(errors).getResponse().json();
+		expect(Object.keys(body.errors)).toEqual(keys);
+	});
+
 	it("joins nested paths with dots and keeps array indexes", () => {
 		const errors = toValidationErrors([
 			{ path: ["address", "city"], message: "Required" },
@@ -80,6 +109,21 @@ describe("AppRequest.validate()", () => {
 		App.hono.post("/login", async (c) => {
 			const credentials = await AppRequest.validate(loginSchema);
 			return c.json({ ok: true, credentials });
+		});
+
+		App.hono.post("/async", async (c) => {
+			const parsed = await AppRequest.validate(z.object({
+				name: z.string().refine(async (value) => value === "ada", "Unknown name")
+					.transform(async (value) => value.length),
+			}));
+			expectTypeOf(parsed).toEqualTypeOf<{ name: number }>();
+			return c.json(parsed);
+		});
+
+		App.hono.post("/combined", async (c) => {
+			return c.json(await AppRequest.validate(z.object({
+				page: z.coerce.number(), term: z.string(),
+			})));
 		});
 
 		// Registered up front: Hono refuses new routes once its matcher is built.
@@ -117,9 +161,34 @@ describe("AppRequest.validate()", () => {
 		expect(Object.keys(body.errors).sort()).toEqual(["email", "password"]);
 	});
 
-	it("validates query parameters alongside the body", async () => {
+	it("validates query parameters without a body", async () => {
 		const res = await App.hono.request("/search?term=hono", { method: "POST" });
 
 		expect(await res.json()).toEqual({ term: "hono" });
 	});
+
+	it.each([
+		["application/json", JSON.stringify({ term: "hono" })],
+		["application/x-www-form-urlencoded", "term=hono"],
+	])("combines query parameters with a %s body", async (contentType, body) => {
+		const res = await App.hono.request("/combined?page=2", {
+			method: "POST", headers: { "content-type": contentType }, body,
+		});
+		expect(res.status).toBe(200);
+		expect(await res.json()).toEqual({ page: 2, term: "hono" });
+	});
+
+	it("renders async refinement failures as 422 and returns transformed output", async () => {
+		for (const name of ["ada", "unknown"]) {
+			const res = await App.hono.request("/async", {
+				method: "POST", headers: { "content-type": "application/json" },
+				body: JSON.stringify({ name }),
+			});
+			expect(res.status).toBe(name === "ada" ? 200 : 422);
+			const body = await res.json();
+			if (name === "ada") expect(body).toEqual({ name: 3 });
+			else expect(body.errors).toEqual({ name: ["Unknown name"] });
+		}
+	});
+
 });
